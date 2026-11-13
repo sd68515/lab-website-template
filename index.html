@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A reusable research website template with illustrative data." />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" href="data:," />
+    <title>Research Project Template</title>
+    <script>
+      try {
+        const stored = localStorage.getItem('lab-template.theme');
+        const theme = stored === 'light' || stored === 'dark' ? stored : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+        document.documentElement.style.backgroundColor = theme === 'dark' ? '#141C27' : '#FFFFFF';
+      } catch (_) { /* Storage can be unavailable; the app still works. */ }
+    </script>
+    <script type="module" crossorigin src="/lab-website-template/assets/index-ysA0xrSk.js"></script>
+    <link rel="modulepreload" crossorigin href="/lab-website-template/assets/rolldown-runtime-DK3Fl9T5.js">
+    <link rel="modulepreload" crossorigin href="/lab-website-template/assets/useLocale-OoMfZl8g.js">
+    <link rel="modulepreload" crossorigin href="/lab-website-template/assets/demo-D0UVEevz.js">
+    <link rel="modulepreload" crossorigin href="/lab-website-template/assets/useApi-CUWMwLLw-Dg9-EyJz.js">
+    <link rel="modulepreload" crossorigin href="/lab-website-template/assets/useAppearance-BCOZLOOs.js">
+    <link rel="modulepreload" crossorigin href="/lab-website-template/assets/site-22NsoxdW.js">
+    <link rel="stylesheet" crossorigin href="/lab-website-template/assets/index-CZhixiJF.css">
+  </head>
+  <body>
+    <div id="app"></div>
+    <noscript>This template needs JavaScript. / 此模板需要启用 JavaScript。</noscript>
+  </body>
+</html>

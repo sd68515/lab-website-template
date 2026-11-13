@@ -1,0 +1,1 @@
+var e={title:{en:`Research Project Template`,zh:`科研项目模板`},lab:{name:`Rehabilitation Engineering Lab`,href:`https://relab.xidian.edu.cn/`},partner:{name:`CCSM`,href:`https://sbmi.uth.edu/ccsm/`}};export{e as t};
