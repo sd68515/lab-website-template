@@ -30,6 +30,11 @@ export default defineConfig({
   base: process.env.VITE_BASE_PATH || '/',
   plugins: [vue({ template: { transformAssetUrls } }), vuetify({ autoImport: true }), includeLicenses()],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-  server: { port: 5173 },
+  server: {
+    port: 5173,
+    // Local notes and screenshots should not trigger a development reload.
+    // 本地笔记和截图不应触发开发服务器刷新。
+    watch: { ignored: ['**/.codex-local/**'] }
+  },
   build: { sourcemap: false }
 })
