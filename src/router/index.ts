@@ -1,51 +1,320 @@
-import { watch } from 'vue'
-import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
-import { useLocale } from '@/composables/useLocale'
-import { datasets, methods, metrics } from '@/data/demo'
-import { site } from '@/data/site'
+/**
+ * Vue Router 配置文件
+ * 使用 Hash 模式路由，所有路由路径和名称从 constants/routes.ts 引入
+ */
+import { createRouter, createWebHashHistory, type RouteRecordRaw, type RouterScrollBehavior } from 'vue-router'
+import { watchEffect } from 'vue'
+import { getPageTitle } from './pageTitle'
 
-// Route names are shared by navigation and links; stable sample IDs live in data/demo.ts.
-// 路由名称供导航和链接共用；稳定的示例 ID 定义在 data/demo.ts。
+import { ROUTE_NAMES, ROUTE_PATHS } from '@/constants/routes'
+import HomeView from '@/views/HomeView.vue'
+import {
+  isValidRealDatasetId,
+  validateSimulationDatasetContext,
+  isValidSimulationId,
+  isValidToolName
+} from '@/utils/route-validators'
+import { getToolPublicName, getUsabilityMethodName, resolveToolName, USABILITY_METHOD_NAMES } from '@/constants/tools'
+import {
+  getDatasetResultScopes,
+  getToolResultScopes,
+  isResultScopeSupported,
+  parseResultScope
+} from '@/constants/result-scope'
+import { buildSimulationIdentifier } from '@/utils/formatters'
+import { findSimulationDatasetById, TOPOLOGY_KEYS } from '@/constants/simulation'
+
+const USABILITY_VALID_TOOLS_SET = new Set<string>(USABILITY_METHOD_NAMES)
+const USABILITY_ALLOWED_QUERY_KEYS = new Set<string>(['tool', 'autoScroll'])
+
+const getQueryString = (value: unknown): string | undefined => {
+  return typeof value === 'string' ? value : undefined
+}
+
+const buildUsabilityQuery = (tool?: string, autoScroll?: string) => {
+  const query: Record<string, string> = {}
+  if (tool) {
+    query.tool = tool
+  }
+  if (tool && autoScroll) {
+    query.autoScroll = autoScroll
+  }
+  return query
+}
+
+const isSameQueryShape = (left: Record<string, unknown>, right: Record<string, string>) => {
+  const leftKeys = Object.keys(left)
+  const rightKeys = Object.keys(right)
+  if (leftKeys.length !== rightKeys.length) {
+    return false
+  }
+
+  return rightKeys.every((key) => left[key] === right[key])
+}
+
+const getNotFoundRedirect = () => {
+  return { name: 'NotFound', replace: true } as const
+}
+
+// 首页随入口加载，避免首屏串行请求；其他页面按需加载。
 const routes: RouteRecordRaw[] = [
-  { path: '/', name: 'home', component: () => import('@/views/HomeView.vue') },
-  { path: '/methods', name: 'methods', component: () => import('@/views/CatalogView.vue') },
-  { path: '/datasets/:datasetId', name: 'dataset-result', component: () => import('@/views/ResultView.vue'), props: { kind: 'dataset' } },
-  { path: '/methods/:methodId', name: 'method-result', component: () => import('@/views/ResultView.vue'), props: { kind: 'method' } },
-  { path: '/metrics/:metricId', name: 'metric', component: () => import('@/views/MetricView.vue') },
-  { path: '/download', name: 'download', component: () => import('@/views/InfoView.vue'), props: { page: 'download' } },
-  { path: '/help', name: 'help', component: () => import('@/views/InfoView.vue'), props: { page: 'help' } },
-  { path: '/about', name: 'about', component: () => import('@/views/InfoView.vue'), props: { page: 'about' } },
-  { path: '/404', name: 'not-found', component: () => import('@/views/NotFound.vue') },
-  { path: '/:pathMatch(.*)*', redirect: { name: 'not-found' } }
+  {
+    path: ROUTE_PATHS.HOME,
+    name: ROUTE_NAMES.HOME,
+    component: HomeView
+  },
+  {
+    path: ROUTE_PATHS.TOOLS,
+    name: ROUTE_NAMES.TOOLS,
+    component: () => import('@/views/ToolsView.vue')
+  },
+  {
+    path: ROUTE_PATHS.DATASET_RESULT,
+    name: ROUTE_NAMES.DATASET_RESULT,
+    component: () => import('@/views/DatasetResult.vue')
+  },
+  {
+    path: ROUTE_PATHS.METHOD_RESULT,
+    name: ROUTE_NAMES.METHOD_RESULT,
+    component: () => import('@/views/MethodResult.vue')
+  },
+
+  // Measurement 路由：父路由包含所有指标子路由
+  {
+    path: ROUTE_PATHS.MEASUREMENT,
+    name: ROUTE_NAMES.MEASUREMENT,
+    component: () => import('@/views/MeasurementResult.vue'),
+    redirect: ROUTE_PATHS.ICCOH,
+    children: [
+      // General Metrics 子路由（主路径）
+      {
+        path: 'general-metrics/metric-a',
+        name: ROUTE_NAMES.ICCOH,
+        component: () => import('@/views/measurements/ICCoh.vue')
+      },
+      {
+        path: 'general-metrics/metric-b',
+        name: ROUTE_NAMES.CBDIR,
+        component: () => import('@/views/measurements/CBDir.vue')
+      },
+      {
+        path: 'general-metrics/metric-c',
+        name: ROUTE_NAMES.TRANSITION_SCORE,
+        component: () => import('@/views/measurements/TransitionScore.vue')
+      },
+      {
+        path: 'general-metrics/metric-d',
+        name: ROUTE_NAMES.ANGLE_CONSISTENCY,
+        component: () => import('@/views/measurements/AngleConsistency.vue')
+      },
+      {
+        path: 'general-metrics/metric-e',
+        name: ROUTE_NAMES.CONSISTENCY_SCORE,
+        component: () => import('@/views/measurements/ConsistencyScore.vue')
+      },
+      {
+        path: 'general-metrics/metric-f',
+        name: ROUTE_NAMES.USABILITY,
+        component: () => import('@/views/measurements/Usability.vue')
+      },
+
+      // Simulation-Specific Metrics 子路由
+      {
+        path: 'simulation/metric-g',
+        name: ROUTE_NAMES.GROUND_TRUTH_CORRELATION,
+        component: () => import('@/views/measurements/GroundTrueCorrelation.vue')
+      },
+      {
+        path: 'simulation/metric-h',
+        name: ROUTE_NAMES.RUNNING_TIME,
+        component: () => import('@/views/measurements/RunningTime.vue')
+      },
+      {
+        path: 'simulation/metric-i',
+        name: ROUTE_NAMES.MEMORY_EFFICIENCY,
+        component: () => import('@/views/measurements/MemoryEfficiency.vue')
+      },
+      {
+        path: 'simulation/metric-j',
+        name: ROUTE_NAMES.DOWN_SAMPLING,
+        component: () => import('@/views/measurements/DownSampling.vue')
+      },
+      {
+        path: 'simulation/metric-k',
+        name: ROUTE_NAMES.BATCH_RUN,
+        component: () => import('@/views/measurements/BatchRun.vue')
+      }
+    ]
+  },
+
+  {
+    path: ROUTE_PATHS.ABOUT,
+    name: ROUTE_NAMES.ABOUT,
+    component: () => import('@/views/AboutView.vue')
+  },
+  {
+    path: ROUTE_PATHS.DOWNLOAD,
+    name: ROUTE_NAMES.DOWNLOAD,
+    component: () => import('@/views/DownloadView.vue')
+  },
+  {
+    path: ROUTE_PATHS.HELP,
+    name: ROUTE_NAMES.HELP,
+    component: () => import('@/views/Help.vue')
+  },
+
+  // 独立的 404 路由，便于在地址栏中保持 /404 路径
+  {
+    path: '/404',
+    name: 'NotFound',
+    component: () => import('@/views/NotFound.vue')
+  },
+  // Catch-all：将所有未匹配路径重定向到 /404
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/404'
+  }
 ]
+
+// 滚动行为：路由切换时不由 Vue Router 处理滚动（由 AppShell 统一处理）
+const scrollBehavior: RouterScrollBehavior = () => {
+  return false
+}
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes,
-  // Restore the previous position on Back; new pages start at the top.
-  // 后退时恢复位置；进入新页面时回到顶部。
-  scrollBehavior(to, from, savedPosition) {
-    if (savedPosition) return savedPosition
-    return to.path !== from.path ? { top: 0 } : false
-  }
+  scrollBehavior
 })
-router.beforeEach(to => {
-  if (to.name === 'dataset-result' && !datasets.some(item => item.id === to.params.datasetId)) return { name: 'not-found' }
-  if (to.name === 'method-result' && !methods.some(item => item.id === to.params.methodId)) return { name: 'not-found' }
-  if (to.name === 'metric' && !metrics.some(item => item.id === to.params.metricId)) return { name: 'not-found' }
+
+router.beforeEach(async (to) => {
+  if (to.name === 'NotFound' || to.path === '/404') {
+    return true
+  }
+
+  if (to.name === ROUTE_NAMES.DATASET_RESULT) {
+    const type = getQueryString(to.query.type)
+    const id = getQueryString(to.query.id)
+    const shape = getQueryString(to.query.shape)
+    const size = getQueryString(to.query.size)
+
+    if (!type || (type !== 'real' && type !== 'simulation')) {
+      return getNotFoundRedirect()
+    }
+
+    if (type === 'real') {
+      if (!id || !isValidRealDatasetId(id)) {
+        return getNotFoundRedirect()
+      }
+    }
+
+    if (type === 'simulation') {
+      const result = validateSimulationDatasetContext(shape, size, id)
+      if (!result.valid || result.mode === 'efficiency-only') {
+        return getNotFoundRedirect()
+      }
+
+      if (!isValidSimulationId(id)) {
+        return getNotFoundRedirect()
+      }
+    }
+
+    // Preserve bookmarks created while this scRNA simulation topology was mislabeled LINEAGE.
+    if (type === 'simulation' && id && to.query.scope === 'LINEAGE' &&
+      findSimulationDatasetById(id)?.topologyKey === TOPOLOGY_KEYS.LINEAGE_TRACING) {
+      return {
+        path: to.path,
+        query: { ...to.query, scope: 'scRNA' },
+        replace: true
+      }
+    }
+
+    const scope = parseResultScope(to.query.scope)
+    const datasetId = type === 'real' ? id : id || buildSimulationIdentifier(shape ?? '', size ?? '')
+    if (!scope || !datasetId || !isResultScopeSupported(scope, getDatasetResultScopes(type, datasetId))) {
+      return getNotFoundRedirect()
+    }
+
+    return true
+  }
+
+  if (to.name === ROUTE_NAMES.METHOD_RESULT) {
+    const tool = getQueryString(to.query.tool)
+    if (!tool || !isValidToolName(tool)) {
+      return getNotFoundRedirect()
+    }
+
+    const resolvedTool = resolveToolName(tool)
+    if (!resolvedTool) {
+      return getNotFoundRedirect()
+    }
+
+    const scope = parseResultScope(to.query.scope)
+    if (!scope || !isResultScopeSupported(scope, getToolResultScopes(resolvedTool))) {
+      return getNotFoundRedirect()
+    }
+
+    const publicToolName = getToolPublicName(resolvedTool)
+    if (tool !== publicToolName) {
+      return {
+        path: to.path,
+        query: { ...to.query, tool: publicToolName },
+        replace: true
+      }
+    }
+
+    return true
+  }
+
+  if (to.name === ROUTE_NAMES.USABILITY) {
+    const rawKeys = Object.keys(to.query)
+    const toolKeyPresent = rawKeys.includes('tool')
+    const toolParam = getQueryString(to.query.tool)
+    const autoScrollParam = getQueryString(to.query.autoScroll)
+
+    if (toolKeyPresent && !toolParam) {
+      console.warn('Malformed tool query for Usability metric page.')
+      return getNotFoundRedirect()
+    }
+
+    if (!toolParam) {
+      const cleanedQuery = buildUsabilityQuery()
+      if (!isSameQueryShape(to.query, cleanedQuery)) {
+        return {
+          path: to.path,
+          query: cleanedQuery,
+          replace: true
+        }
+      }
+      return true
+    }
+
+    const normalizedTool = getUsabilityMethodName(toolParam)
+    if (!USABILITY_VALID_TOOLS_SET.has(normalizedTool)) {
+      console.warn(`Invalid tool for Usability metric page: ${toolParam}`)
+      return getNotFoundRedirect()
+    }
+
+    const hasUnexpectedQueryKey = rawKeys.some((key) => !USABILITY_ALLOWED_QUERY_KEYS.has(key))
+    const cleanedQuery = buildUsabilityQuery(normalizedTool, autoScrollParam)
+
+    if (toolParam !== normalizedTool || hasUnexpectedQueryKey || !isSameQueryShape(to.query, cleanedQuery)) {
+      return {
+        path: to.path,
+        query: cleanedQuery,
+        replace: true
+      }
+    }
+
+    return true
+  }
+
+
   return true
 })
 
-const { locale, t, localize } = useLocale()
-watch([router.currentRoute, locale], ([route]) => {
-  const labels: Record<string, string> = {
-    home: t('Home', '首页'), methods: t('Methods', '方法'), download: t('Download', '下载'),
-    help: t('Help', '帮助'), about: t('Contact', '联系'), 'not-found': t('Not found', '页面不存在'),
-    'dataset-result': datasets.find(item => item.id === route.params.datasetId)?.name || t('Dataset', '数据集'),
-    'method-result': methods.find(item => item.id === route.params.methodId)?.name || t('Method', '方法'),
-    metric: metrics.find(item => item.id === route.params.metricId)?.name || t('Metric', '指标')
-  }
-  document.title = `${labels[String(route.name)] || t('Home', '首页')} | ${localize(site.title)}`
-}, { immediate: true })
+watchEffect(() => {
+  document.title = getPageTitle(router.currentRoute.value)
+})
 
 export default router

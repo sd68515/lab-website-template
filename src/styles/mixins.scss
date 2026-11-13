@@ -1,0 +1,43 @@
+/**
+ * 全局 SCSS 响应式工具
+ * 断点命名与 Vuetify 3 默认保持一致（md=1024px, lg=1200px 等），
+ * 供 home.scss 等页面通过 @include mixins.respond('md') 使用。
+ */
+@use 'sass:map';
+
+$breakpoints: (
+  'xl': 1440px,
+  'lg': 1200px,
+  'md': 1024px,
+  'sm': 900px,
+  'tablet': 768px,
+  'xs': 600px,
+  'phone': 540px
+);
+
+@mixin respond($point) {
+  $value: map.get($breakpoints, $point);
+
+  @if $value {
+    @media (max-width: $value) {
+      @content;
+    }
+  } @else {
+    @warn 'Unknown breakpoint "#{ $point }"';
+  }
+}
+
+// 禁止文本选择
+// 用于导航项、可点击卡片标题/标签等纯交互元素，避免长按拖选时
+// 误选这些不可复制的装饰文本造成困扰。正文/数值等可复制内容不应使用。
+@mixin no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+// 禁止文本选择 + 禁止图片拖拽
+// 用于结果图、缩略图、logo 等图片元素，额外阻止浏览器拖出图片幽灵影像。
+@mixin no-select-image {
+  @include no-select;
+  -webkit-user-drag: none;
+}

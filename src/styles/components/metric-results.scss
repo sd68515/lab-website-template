@@ -1,0 +1,165 @@
+/**
+ * Metrics 结果图片通用样式
+ * 供 DatasetResult / MethodResult 等页面复用
+ */
+
+/* ========== 布局容器 ========== */
+
+/* 单列布局，限制最大宽度，避免超出视口 */
+.dataset-result-metric-images {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  max-width: 920px;
+}
+
+.dataset-result-metric-images--placeholder {
+  width: 100%;
+  max-width: none;
+}
+
+.dataset-result-metric-images--placeholder .metric-image {
+  width: 100%;
+}
+
+.dataset-result-metric-images--placeholder .metric-image--consistency {
+  max-width: none;
+  justify-self: stretch;
+}
+
+/* ========== 卡片容器 ========== */
+
+/* 单个指标图片容器
+ * 在 DatasetResult / MethodResult 中仅作为布局容器使用，不再提供额外边框和阴影，
+ * 避免在指标卡片 + Heatmap 之间再嵌套一层矩形边框。
+ */
+.metric-image {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  transition: none;
+
+  &:hover {
+    box-shadow: none;
+  }
+}
+
+.metric-image--previewable {
+  cursor: zoom-in;
+}
+
+.metric-image--previewable .heatmap-display__wrapper {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--app-border-radius);
+  overflow: hidden;
+  background: var(--heatmap-background, #ffffff);
+}
+
+.dataset-result-layout .dataset-result-metric-images .heatmap-display__wrapper,
+.method-result-layout .dataset-result-metric-images .heatmap-display__wrapper {
+  height: 450px;
+  min-height: 0;
+}
+
+.dataset-result-layout .dataset-result-metric-images .heatmap-display__wrapper--compact,
+.method-result-layout .dataset-result-metric-images .heatmap-display__wrapper--compact {
+  height: 120px;
+}
+
+.dataset-result-layout .dataset-result-metric-images .heatmap-display__image,
+.method-result-layout .dataset-result-metric-images .heatmap-display__image {
+  height: 100%;
+}
+
+.dataset-result-layout .dataset-result-metric-images .heatmap-display__loading,
+.dataset-result-layout .dataset-result-metric-images .heatmap-display__error,
+.dataset-result-layout .dataset-result-metric-images .heatmap-display__placeholder,
+.dataset-result-layout .dataset-result-metric-images .heatmap-display__upload-pending,
+.method-result-layout .dataset-result-metric-images .heatmap-display__loading,
+.method-result-layout .dataset-result-metric-images .heatmap-display__error,
+.method-result-layout .dataset-result-metric-images .heatmap-display__placeholder,
+.method-result-layout .dataset-result-metric-images .heatmap-display__upload-pending {
+  height: 100%;
+}
+
+.metric-image--consistency {
+  max-width: 640px;
+  margin: 0;
+  justify-self: start;
+}
+
+.metric-image--consistency .heatmap-display__wrapper {
+  height: 480px;
+}
+
+.metric-image--placeholder.metric-image--consistency {
+  width: 100%;
+  max-width: none;
+  justify-self: stretch;
+}
+
+/* 真子图（Angle consistency / Consistency score detailed）在结果页中的容器
+ * 仅保留外层分类卡片和 Heatmap 的边框，去掉中间这一层矩形边框
+ */
+.metric-image--subplot {
+  background: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+/* ========== 响应式断点 ========== */
+
+@media (max-width: 1919px) {
+  .dataset-result-metric-images {
+    max-width: 820px;
+  }
+
+  .dataset-result-metric-images--placeholder {
+    max-width: none;
+  }
+
+  .dataset-result-layout .dataset-result-metric-images .heatmap-display__wrapper,
+  .method-result-layout .dataset-result-metric-images .heatmap-display__wrapper {
+    height: 400px;
+  }
+
+  .dataset-result-layout .dataset-result-metric-images .heatmap-display__wrapper--compact,
+  .method-result-layout .dataset-result-metric-images .heatmap-display__wrapper--compact {
+    height: 120px;
+  }
+
+  .metric-image--consistency .heatmap-display__wrapper {
+    height: 420px;
+  }
+}
+
+@media (max-width: 1279px) {
+  .dataset-result-metric-images {
+    max-width: 720px;
+  }
+
+  .dataset-result-metric-images--placeholder {
+    max-width: none;
+  }
+
+  .dataset-result-layout .dataset-result-metric-images .heatmap-display__wrapper,
+  .method-result-layout .dataset-result-metric-images .heatmap-display__wrapper {
+    height: 350px;
+  }
+
+  .dataset-result-layout .dataset-result-metric-images .heatmap-display__wrapper--compact,
+  .method-result-layout .dataset-result-metric-images .heatmap-display__wrapper--compact {
+    height: 120px;
+  }
+
+  .metric-image--consistency .heatmap-display__wrapper {
+    height: 370px;
+  }
+
+  .metric-image--consistency {
+    max-width: 560px;
+  }
+}

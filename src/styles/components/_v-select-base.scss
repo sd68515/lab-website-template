@@ -1,0 +1,206 @@
+/**
+ * Vuetify v-select 自定义样式 mixin
+ *
+ * 用途：
+ * - 统一首页搜索区（.search-select）与 Measurement 所有 DatasetFilter 组件的下拉选择框样式
+ * - 通过参数控制高度与字号，其他视觉元素（颜色、圆角、label 行为）保持一致
+ *
+ * 参数说明：
+ * - $height: 组件高度（支持直接数值或 CSS 变量），默认 52px
+ * - $input-font-size: 输入框/选中项字号，默认 UI 角色（1rem）
+ * - $label-font-size: label 字号，默认 UI 角色（1rem）
+ */
+@use '../variables.scss' as vars;
+
+@mixin v-select-custom(
+  $height: 52px,
+  $input-font-size: var(--font-size-ui),
+  $label-font-size: var(--font-size-ui)
+) {
+  // 主色调与边框色：
+  // - $primary-color：激活/悬浮时的边框与文本主色
+  // - $border-color：非激活状态下的基础边框色
+  // - $border-color-hover：悬浮时边框色
+  $primary-color: var(--color-accent);
+  $border-color: var(--color-border);
+  $border-color-hover: $primary-color;
+
+  .v-field {
+    min-height: $height;
+    height: $height;
+    // 统一圆角：首页搜索区与 Measurement 所有 DatasetFilter 使用 control 级圆角
+    border-radius: vars.$control-border-radius;
+    background: var(--color-surface);
+    box-shadow: none;
+    // 仅对阴影做过渡，边框颜色由 outline segments 统一控制
+    transition: box-shadow 0.2s ease;
+  }
+
+  .v-field__field {
+    min-height: $height;
+    height: $height;
+    align-items: center;
+  }
+
+  .v-field__input {
+    min-height: $height;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-inline-start: 16px;
+    padding-inline-end: 12px;
+    font-size: $input-font-size;
+    font-family: var(--font-family-ui);
+    color: $primary-color;
+    align-items: center;
+  }
+
+  .v-field__overlay {
+    background-color: transparent;
+  }
+
+  // 选中项文本样式
+  .v-select__selection-text {
+    color: $primary-color;
+    font-size: $input-font-size;
+    font-weight: 600;
+    font-family: var(--font-family-ui);
+    white-space: nowrap;
+  }
+
+  // Label 基础样式（统一使用首页风格）
+  .v-label {
+    color: $primary-color;
+    font-size: $label-font-size;
+    font-family: var(--font-family-ui);
+    opacity: 1;
+    margin-inline-start: var(--v-field-padding-start);
+    margin-inline-end: var(--v-field-padding-end);
+    transition: color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  // 项目全局 reset 会把 Vuetify 在 layer 内声明的 label margin 清零。
+  // 对 outlined 的 floating label 恢复默认 4px 内缩，保持与正文左起点一致。
+  .v-field--variant-outlined .v-label.v-field-label--floating {
+    margin: 0 4px;
+  }
+
+  // 激活/聚焦时的 label：提升可读性
+  .v-field--focused .v-label,
+  .v-field--active .v-label {
+    color: $primary-color;
+    opacity: 1;
+  }
+
+  // Vuetify 4 在部分“菜单刚关闭但焦点未完全移除”的瞬间仍会保留 floating class。
+  // 这里只在真正有值/激活/聚焦时再上浮，避免空值状态点击外部后 label 停在顶部。
+  .v-field--dirty .v-label.v-field-label--floating,
+  .v-field--active .v-label.v-field-label--floating,
+  .v-field--focused .v-label.v-field-label--floating {
+    --v-field-label-scale: 1;
+    font-size: $label-font-size;
+    transform: translateY(-58%);
+    transition-property: opacity, transform;
+  }
+
+  // 空值 VSelect 在菜单关闭后若短暂残留 active 类，Vuetify 会继续显示 outlined 的
+  // floating label（默认仅 4px 左边距），视觉上就会像“提示文字贴住左边框”。
+  // 当控件无值、菜单已收起且真实 DOM 已失焦时，强制恢复主 label 的默认位置。
+  .v-select:not(.v-select--selected):not(.v-select--active-menu):not(:focus-within) {
+    .v-label.v-field-label:not(.v-field-label--floating) {
+      visibility: visible;
+      opacity: 1;
+      transform: none;
+    }
+
+    .v-label.v-field-label--floating {
+      visibility: hidden;
+      transform: none;
+    }
+
+    .v-field__outline__notch {
+      border-top-width: 2px;
+    }
+  }
+
+  // 边框样式（非 scoped 样式，直接选择器）
+  // 注意：Vuetify 使用 start/notch/end 三段来拼成一个带缺口的轮廓，如果对
+  // .v-field__outline__start/.v-field__outline__notch/.v-field__outline__end
+  // 统一设置四个方向的 border，会在 notch 左右出现多余的竖线（label 左右各一条）。
+  // 因此这里明确拆分三段的职责：
+  // - start：只画左侧 + 顶部的一部分，右侧不画线
+  // - end：只画右侧 + 顶部的一部分，左侧不画线
+  // - notch：绘制上下边框；label 上浮时隐藏上边框形成缺口
+  //
+  // 后续如需修改边框样式，请避免重新对三个 segment 同时设置完整 border-width，
+  // 否则会重新引入 label 两侧的“额外竖线”问题。
+  //
+  // Start 部分：绘制左边框 + 顶部/底部的一段，隐藏右边框避免在 label 左侧出现竖线
+  .v-field__outline__start {
+    border-color: $border-color;
+    border-style: solid;
+    // top 2px, right 0, bottom 2px, left 2px
+    border-width: 2px 0 2px 2px;
+  }
+
+  // End 部分：绘制右边框 + 顶部/底部的一段，隐藏左边框避免在 label 右侧出现竖线
+  .v-field__outline__end {
+    border-color: $border-color;
+    border-style: solid;
+    // top 2px, right 2px, bottom 2px, left 0
+    border-width: 2px 2px 2px 0;
+  }
+
+  // Notch 部分：绘制上下边框，作为 label 区域的一部分；
+  // 默认情况下参与完整轮廓（上/下 2px），当 label 浮动时再隐藏上边框形成缺口。
+  .v-field__outline__notch {
+    border-color: $border-color;
+    border-style: solid;
+    // top 2px, right 0, bottom 2px, left 0
+    border-width: 2px 0 2px 0;
+  }
+
+  // label 浮动（激活）时隐藏 notch 顶部边框，形成缺口效果
+  .v-field--active .v-field__outline__notch {
+    border-top-width: 0;
+  }
+
+  // 覆盖 Vuetify 默认的半透明边框不透明度，避免 var(--color-border) 被稀释成更浅的 #edf1f5
+  .v-field__outline__start,
+  .v-field__outline__end,
+  .v-field__outline__notch {
+    opacity: 1;
+    // 统一管理三段 outline 的边框颜色过渡，避免分散在各段上难以维护
+    transition: border-color 0.2s ease;
+  }
+
+  .v-field--focused .v-field__outline__start,
+  .v-field--focused .v-field__outline__end,
+  .v-field--focused .v-field__outline__notch {
+    border-color: $primary-color;
+  }
+
+  .v-field:hover:not(.v-field--focused) .v-field__outline__start,
+  .v-field:hover:not(.v-field--focused) .v-field__outline__end,
+  .v-field:hover:not(.v-field--focused) .v-field__outline__notch {
+    border-color: $border-color-hover;
+  }
+
+  .v-field__outline {
+    min-height: $height;
+  }
+
+  // 清理 Vuetify 在 outline 上使用 ::before/::after 叠加绘制的 0.8px 灰色辅助边框，
+  // 避免在 label 区域上下出现额外的 1px 深灰线段。
+  .v-field__outline::before,
+  .v-field__outline::after {
+    border-width: 0 !important;
+  }
+
+  // 同样清理 notch 上的 ::before/::after 伪元素边框（默认 0.8px rgba(0,0,0,0.87)），
+  // 防止在 label 上下叠加出 1px 深灰线。
+  .v-field__outline__notch::before,
+  .v-field__outline__notch::after {
+    border-width: 0 !important;
+    border-color: transparent !important;
+  }
+}

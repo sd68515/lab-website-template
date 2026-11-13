@@ -1,0 +1,96 @@
+@use '@/styles/variables.scss' as vars;
+@use '@/styles/components/v-select-base.scss' as select;
+@use './interaction' as interaction;
+
+.general-heatmap-card {
+  &__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px 28px;
+    margin-bottom: 24px;
+  }
+
+  &__filters {
+    display: flex;
+    flex: 1 1 600px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+    max-width: 760px;
+  }
+
+  &__select {
+    min-width: 0;
+    margin: 0;
+    @include select.v-select-custom($height: 48px, $input-font-size: var(--font-size-ui), $label-font-size: var(--font-size-ui));
+
+    &--scope {
+      flex: 2 1 380px;
+
+      .v-field,
+      .v-field__field {
+        height: auto;
+      }
+
+      .v-select__selection-text {
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+    }
+  }
+
+  &__source {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    min-width: 0;
+    height: 48px;
+    overflow: hidden;
+    border: 2px solid var(--color-border);
+    border-radius: vars.$border-radius;
+    background: var(--color-surface);
+  }
+
+  &__source-button {
+    flex: 1 1 0;
+    min-width: 84px;
+    --v-btn-height: 48px;
+    height: 100%;
+    min-height: 0;
+    padding: 0 12px;
+    letter-spacing: var(--letter-spacing-ui);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-ui);
+    font-weight: 600;
+
+    &.v-btn--variant-text {
+      /* Override the global .v-btn radius so both segments meet at a straight edge.*/
+      border-radius: 0;
+      @include interaction.segmented-button;
+    }
+  }
+
+  &__source-button + &__source-button {
+    border-left: 1px solid var(--color-border);
+  }
+
+  @media (max-width: 600px) {
+    &__filters {
+      flex-basis: 100%;
+      gap: 20px;
+    }
+
+    &__select,
+    &__source {
+      flex-basis: 100%;
+      width: 100%;
+    }
+
+    &__source-button {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+}

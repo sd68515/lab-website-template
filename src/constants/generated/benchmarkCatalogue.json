@@ -1,0 +1,14 @@
+{
+  "deliveredToolNames": [
+    "MethodA",
+    "MethodB"
+  ],
+  "simulationToolNames": [
+    "MethodA",
+    "MethodB"
+  ],
+  "realDatasetIds": [
+    "1",
+    "2"
+  ]
+}

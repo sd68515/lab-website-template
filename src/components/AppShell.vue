@@ -1,110 +1,157 @@
 <template>
-  <div class="site-shell">
-    <a class="skip-link" href="#main-content" @click.prevent="focusMain">
-      {{ t('Skip to content', '跳转到主要内容') }}
-    </a>
-    <header class="site-header">
-      <nav class="site-nav" :aria-label="t('Main navigation', '主导航')">
-        <RouterLink
-          v-for="item in navigation"
-          :key="item.name"
-          :to="{ name: item.name }"
-          :class="{ active: isActive(item.name) }"
-          :aria-current="isActive(item.name) ? 'page' : undefined"
-        >
-          {{ t(item.en, item.zh) }}
-        </RouterLink>
-      </nav>
-      <div class="header-actions">
-        <span class="site-brand">{{ localize(site.title) }}</span>
-        <v-menu location="bottom end">
-          <template #activator="{ props }">
-            <button
-              v-bind="props"
-              class="icon-button"
-              type="button"
-              :aria-label="t('Select language', '选择语言')"
-              :title="t('Select language', '选择语言')"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path :d="mdiTranslate" /></svg>
-            </button>
-          </template>
-          <v-list class="language-list" role="menu" :aria-label="t('Select language', '选择语言')">
-            <v-list-item
-              role="menuitemradio"
-              lang="en"
-              :aria-checked="locale === 'en'"
-              :active="locale === 'en'"
-              @click="setLocale('en')"
-            >English</v-list-item>
-            <v-list-item
-              role="menuitemradio"
-              lang="zh-Hans"
-              :aria-checked="locale === 'zh-Hans'"
-              :active="locale === 'zh-Hans'"
-              @click="setLocale('zh-Hans')"
-            >简体中文</v-list-item>
-          </v-list>
-        </v-menu>
-        <button
-          class="icon-button"
-          type="button"
-          :aria-label="themeActionLabel"
-          :title="themeActionLabel"
-          @click="toggleAppearance"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path :d="isDark ? mdiWhiteBalanceSunny : mdiWeatherNight" /></svg>
-        </button>
+  <div class="app-shell">
+    <a class="skip-link" href="#main-content" @click.prevent="focusMainContent">{{ text('common.skipToContent') }}</a>
+    <AppMenu />
+
+    <v-main
+      id="main-content"
+      ref="vMainRef"
+      class="app-shell-main"
+      :class="{ 'app-shell-main--keyboard-focus': mainKeyboardFocus }"
+      tabindex="-1"
+      @pointerdown.capture="mainKeyboardFocus = false"
+      @blur="mainKeyboardFocus = false"
+    >
+      <div class="app-shell-content">
+        <div class="app-shell-page">
+          <router-view :key="routerViewKey" />
+        </div>
+
+        <div class="app-shell-footer">
+          <AppFooter />
+        </div>
       </div>
-    </header>
-    <main id="main-content" ref="mainContent" class="site-main" tabindex="-1">
-      <RouterView />
-    </main>
-    <footer class="site-footer">
-      <p>
-        {{ t('Developed by', '共同建设：') }}
-        <a :href="site.lab.href" target="_blank" rel="noopener noreferrer">{{ site.lab.name }}</a>
-        {{ t('and', '与') }}
-        <a :href="site.partner.href" target="_blank" rel="noopener noreferrer">{{ site.partner.name }}</a>.
-      </p>
-    </footer>
+    </v-main>
+    <ResultBrowser v-if="showResultBrowser" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { mdiTranslate, mdiWeatherNight, mdiWhiteBalanceSunny } from '@mdi/js'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, watch, nextTick, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useLocale } from '@/composables/useLocale'
-import { useAppearance } from '@/composables/useAppearance'
-import { site } from '@/data/site'
+import { useDisplay } from 'vuetify'
+import AppMenu from '@/layout/AppMenu.vue'
+import AppFooter from '@/layout/AppFooter.vue'
+import { useScrollContainer } from '@/composables/useScrollContainer'
+import { ROUTE_NAMES } from '@/constants/routes'
+import { getScrollbarWidth } from '@/utils/scrollbar'
+import { text } from '@/utils/locale'
 
-// These shared composables keep the selected language and theme across pages.
-// 共享组合式函数让语言和主题设置在页面切换时保持一致。
-const { locale, t, localize, setLocale } = useLocale()
-const { isDark, toggleAppearance } = useAppearance()
-const themeActionLabel = computed(() => isDark.value
-  ? t('Switch to light theme', '切换到浅色主题')
-  : t('Switch to dark theme', '切换到深色主题'))
-const mainContent = ref<HTMLElement | null>(null)
 const route = useRoute()
-const navigation = [
-  { name: 'home', en: 'Home', zh: '首页' },
-  { name: 'methods', en: 'Tools', zh: '工具' },
-  { name: 'download', en: 'Download', zh: '下载' },
-  { name: 'help', en: 'Help', zh: '帮助' },
-  { name: 'about', en: 'Contact', zh: '联系我们' }
-]
+const scrollContainer = useScrollContainer()
+const ResultBrowser = defineAsyncComponent(() => import('@/components/result/ResultBrowser.vue'))
+const display = useDisplay()
+const mainKeyboardFocus = ref(false)
+function focusMainContent() {
+  mainKeyboardFocus.value = true
+  document.getElementById('main-content')?.focus({ preventScroll: true })
+}
+// 小屏和短视口省略悬浮辅助功能；改变窗口大小时卸载，避免隐藏面板残留焦点或菜单。
+const showResultBrowser = computed(() =>
+  (route.name === ROUTE_NAMES.DATASET_RESULT || route.name === ROUTE_NAMES.METHOD_RESULT) &&
+  display.width.value > 760 && display.height.value > 500
+)
 
-// Focus directly so the fragment does not replace the hash-based route.
-// 直接移动焦点，避免锚点覆盖 hash 路由。
-function focusMain() {
-  mainContent.value?.focus()
+const routerViewKey = computed(() => {
+  // 混合策略：measurement 路由只用 path，避免 query 变化导致页面整体重建与抖动；
+  // 其他路由保持 fullPath，保留"强制重渲染"的兜底能力（用于少数间歇性不刷新的场景）。
+  if (route.path.startsWith('/measurement')) {
+    return route.path
+  }
+  return route.fullPath
+})
+
+// 固定预留滚动条宽度，避免动态检测造成闪烁和页面切换时的布局跳动。
+const physicalScrollbarWidth = getScrollbarWidth()
+
+const applyScrollbarWidth = () => {
+  if (typeof document === 'undefined') return
+  document.documentElement.style.setProperty('--scrollbar-width', `${physicalScrollbarWidth}px`)
 }
 
-function isActive(name: string) {
-  return route.name === name || (
-    name === 'home' && ['dataset-result', 'method-result', 'metric'].includes(String(route.name))
-  )
+/**
+ * 显示应用：在 Vuetify layout 初始化完成后添加 app-ready class
+ * 使用双重 rAF 确保浏览器完成渲染和重排
+ */
+const showApp = () => {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.getElementById('app')?.classList.add('app-ready')
+    })
+  })
 }
+
+onMounted(async () => {
+  // main.ts 已等待 router.isReady()，此处无需再等待
+  const vMainEl = document.querySelector<HTMLElement>('.app-shell-main')
+  if (vMainEl) {
+    scrollContainer.attach(vMainEl)
+  }
+
+  // 立即设置滚动条宽度（无需RAF延迟，因为值是固定的）
+  applyScrollbarWidth()
+
+  // 等待 DOM 更新和 Vuetify layout 计算完成后显示应用
+  await nextTick()
+  showApp()
+})
+
+onBeforeUnmount(() => {
+  scrollContainer.detach()
+})
+
+// 路由切换时滚动到顶部
+watch(
+  () => route.path,
+  (nextPath, prevPath) => {
+    if (nextPath !== prevPath) {
+      scrollContainer.scrollToTop('auto')
+    }
+  }
+)
 </script>
+
+<style lang="scss">
+@use '@/styles/variables.scss' as vars;
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.app-shell-main {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  display: block;
+}
+
+.app-shell-content {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell-page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell-page > * {
+  flex: 1;
+  // 页面组件最小高度：确保内容加载前后滚动区域稳定
+  // 使用 calc 计算视口高度减去顶栏和底栏，避免滚动条滑块因内容高度变化而跳动
+  min-height: calc(100vh - #{vars.$header-height} - var(--footer-height, 56px));
+}
+
+.app-shell-footer {
+  flex: 0 0 auto;
+  border-top: 1px solid var(--color-accent);
+  background-color: transparent;
+}
+</style>

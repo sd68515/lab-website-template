@@ -1,0 +1,328 @@
+/**
+ * ResultNavigationSidebar 组件样式
+ * 侧边导航通用视觉：固定在左侧 280px 栏，配合 Tools/Data Navigation 使用
+ *
+ * 维护约定：
+ * - 导航相关样式（.dataset-result-nav-*）在本文件集中维护；回到顶部按钮基础样式由 back-to-top.scss 共享。
+ * - 导航项支持长文本省略及不同结果页共用的间距。
+ */
+@use '../variables.scss' as vars;
+@use '../mixins.scss' as util;
+@use './back-to-top.scss';
+
+.dataset-result-tool-navigation {
+  position: fixed;
+  left: 20px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  width: 280px;
+  box-sizing: border-box;
+  border: none;
+  transition: bottom 0.2s ease;
+}
+
+.dataset-result-tool-navigation--sticky {
+  position: relative;
+  left: auto;
+  z-index: 20;
+  transition: none;
+}
+
+/* 响应式：导航栏宽度与显示策略 */
+@media (max-width: 1366px) {
+  .dataset-result-tool-navigation {
+    width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dataset-result-tool-navigation {
+    display: none;
+  }
+}
+
+.dataset-result-nav-surface {
+  width: 100% !important;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: var(--app-border-radius);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.dataset-result-nav-header {
+  background: var(--color-surface-muted-strong);
+  color: var(--color-accent);
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(var(--v-theme-accent), max(0.1, var(--divider-opacity-min)));
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.dataset-result-nav-title {
+  margin: 0;
+  font-size: var(--font-size-subheading);
+  line-height: var(--line-height-panel);
+  font-weight: 600;
+  text-align: left;
+  flex: 1;
+  font-family: var(--font-family-ui);
+  color: var(--color-accent);
+  @include util.no-select;
+}
+
+.dataset-result-nav-content--programmatic-scroll .dataset-result-nav-item:not(.dataset-result-nav-item--active):hover {
+  background-color: transparent;
+  color: var(--color-accent);
+  border-left-color: transparent;
+}
+
+.dataset-result-nav-shell {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  max-height: calc(100vh - 140px);
+}
+
+.dataset-result-tool-navigation--sticky .dataset-result-nav-shell {
+  max-height: none;
+}
+
+.dataset-result-nav-content {
+  height: 100%;
+  overflow-y: auto;
+  padding: 0;
+  flex: 1;
+  scrollbar-gutter: stable;
+
+  /* 自定义滚动条样式 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--v-theme-accent), 0.45) transparent;
+}
+
+/* 滚动条美化 */
+.dataset-result-nav-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dataset-result-nav-content::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 10px 2px;
+}
+
+.dataset-result-nav-content::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(135deg, rgba(var(--v-theme-accent), 0.7), rgba(var(--v-theme-accentHover), 0.7));
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.dataset-result-nav-content::-webkit-scrollbar-thumb:hover {
+  background-image: linear-gradient(135deg, rgba(var(--v-theme-accent), 0.85), rgba(var(--v-theme-accentHover), 0.85));
+}
+
+/* 导航分组容器（如 "Overall" 分组、"Celltype" 分组） */
+.dataset-result-nav-group {
+  padding: 12px 0 4px;
+}
+
+/* 相邻分组之间添加分隔线 */
+.dataset-result-nav-group + .dataset-result-nav-group {
+  border-top: 1px solid var(--color-divider);
+}
+
+/* Modality → real/simulated → simulation group; each nested level stays distinguishable. */
+.dataset-result-tool-navigation .method-result-nav-sub-group {
+  margin-top: 8px;
+  text-align: left;
+}
+
+.dataset-result-tool-navigation .method-result-nav-sub-title {
+  width: 100%;
+  padding: 8px 16px 8px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--color-accent);
+  background: none;
+  border: none;
+  text-align: left;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+    border-radius: var(--app-border-radius);
+  }
+}
+
+.method-result-nav-sub-group .method-result-nav-sub-group {
+  margin-left: 12px;
+  border-left: 1px solid var(--color-divider);
+}
+
+/* 导航分组标题按钮 - 可折叠/展开 */
+.dataset-result-nav-group-title {
+  width: 100%;
+  padding: 8px 12px 6px 20px;  /* 左边缘与侧栏标题对齐*/
+  font-size: var(--font-size-subheading);
+  font-weight: 600;
+  font-family: var(--font-family-ui);
+  color: var(--color-accent);
+  text-transform: none;
+  opacity: 0.85;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  text-align: left;
+  @include util.no-select;
+}
+
+/* 分组标题 hover 和 focus 状态 */
+.dataset-result-nav-group-title:hover,
+.dataset-result-nav-group-title:focus {
+  opacity: 1;
+}
+
+.dataset-result-nav-group-title:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--app-border-radius);
+}
+
+.dataset-result-nav-group-title:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* 分组标题文本（禁用指针事件以确保按钮可点击） */
+.dataset-result-nav-group-title-text {
+  pointer-events: none;
+  flex: 1;
+  text-align: left;
+}
+
+/* 分组折叠/展开箭头 */
+.dataset-result-nav-group-toggle {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  transition: transform 0.2s ease;
+}
+
+/* 折叠状态的箭头 - 向左旋转 90 度 */
+.dataset-result-nav-group-toggle--collapsed {
+  transform: rotate(-90deg);
+}
+
+.dataset-result-nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 14px 20px 14px 17px;  /* 左边距17px + 边框3px = 20px，与分组标题对齐*/
+  gap: 12px; /* 图标与文案间距*/
+  min-width: 0; /* 允许子元素正确省略*/
+  color: var(--color-accent);
+  font-size: var(--font-size-ui);
+  line-height: var(--line-height-ui);
+  border: 0;
+  border-bottom: 1px dashed var(--color-divider);
+  border-left: 3px solid transparent;  /* 默认透明左边框*/
+  border-radius: 0;
+  background: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-left-color 0.15s ease;
+  text-align: left;
+  @include util.no-select;
+
+  &--dense {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  &:not(.dataset-result-nav-item--active):hover {
+    background-color: var(--color-surface-muted-strong);
+    color: var(--color-accent);
+    border-left-color: var(--color-primary);
+  }
+
+  &--active {
+    background-color: var(--color-surface-muted-strong);
+    color: var(--color-accent-dark);
+    font-weight: 600;
+    border-left-color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+    border-radius: var(--app-border-radius);
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+.dataset-result-nav-group-title + [id^='nav-group-'] .dataset-result-nav-item:first-child {
+  border-top: 1px dashed var(--color-divider);
+}
+
+.dataset-result-nav-item:last-child {
+  border-bottom: none;
+}
+
+.dataset-result-nav-dot {
+  display: none;
+}
+
+.dataset-result-nav-label {
+  font-size: var(--font-size-ui);
+  color: inherit;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 长文本导航项（例如 Additional data 的完整 Dataset ID）允许换行展示*/
+.nav-item--wrap-text {
+  white-space: normal;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .dataset-result-nav-header {
+    height: 56px;
+    padding: 12px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .dataset-result-nav-link {
+    padding: 12px 18px;
+    font-size: var(--font-size-body);
+  }
+}

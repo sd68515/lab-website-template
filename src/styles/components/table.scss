@@ -1,0 +1,15 @@
+/**
+ * Element Plus 表格基础样式
+ * 统一单元格排版，确保多行文本左对齐
+ */
+.el-table .cell {
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: normal;
+  line-height: var(--line-height-ui);
+  padding: 5px 12px;
+  text-align: left;
+  font-size: var(--font-size-ui);
+}

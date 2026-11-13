@@ -1,0 +1,162 @@
+/**
+ * StatusMessage 组件样式
+ * 定义加载、空状态与错误提示的视觉风格
+ */
+@use '../variables.scss' as vars;
+
+.status-message {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 24px;
+  border-radius: var(--app-border-radius);
+  background: var(--color-surface-muted-strong);
+  color: vars.$text-primary;
+  box-shadow: inset 0 0 0 1px rgba(var(--v-theme-accent), max(0.15, var(--divider-opacity-min)));
+
+  &__icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__icon-symbol {
+    color: vars.$primary-color;
+  }
+
+  &__spinner {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 3px solid rgba(var(--v-theme-accent), max(0.25, var(--divider-opacity-min)));
+    border-top-color: vars.$primary-color;
+    animation: status-message-spin 1s linear infinite;
+  }
+
+  &__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: vars.$primary-color;
+    display: inline-block;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--font-size-section);
+    font-weight: 600;
+    line-height: var(--line-height-section);
+    color: var(--color-accent);
+    font-family: var(--font-family-editorial);
+  }
+
+  &__description {
+    margin: 8px 0 0;
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
+    font-family: var(--font-family-ui);
+  }
+
+  &__actions {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  &--loading {
+    .status-message__title {
+      font-family: var(--font-family-ui);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-ui);
+    }
+
+    .status-message__description {
+      margin-top: 4px;
+      font-size: var(--font-size-ui);
+      line-height: var(--line-height-ui);
+    }
+  }
+
+  &--centered {
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    background: transparent;
+    box-shadow: none;
+    text-align: center;
+
+    .status-message__content {
+      flex: 0 1 auto;
+    }
+  }
+
+  &--error {
+    background: var(--color-surface-muted-strong);
+    box-shadow: inset 0 0 0 1px rgba(var(--v-theme-error), max(0.2, var(--divider-opacity-min)));
+
+    .status-message__title {
+      color: var(--error-text-color);
+    }
+
+    .status-message__icon-symbol {
+      color: var(--error-text-color);
+    }
+  }
+
+  &--empty {
+    background: var(--color-surface-muted-strong);
+  }
+}
+
+@keyframes status-message-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/**
+ * 通用空数据卡片样式
+ * 用于各页面统一的"无数据"状态显示
+ */
+.data-empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 360px;
+  background: var(--color-surface);
+  border: 1px solid rgba(var(--v-theme-text), max(0.12, var(--divider-opacity-min)));
+  border-radius: var(--app-border-radius);
+  text-align: center;
+
+  &__icon {
+    opacity: 0.5;
+    margin-bottom: 20px;
+  }
+
+  &__title {
+    font-size: var(--font-size-section);
+    font-weight: 600;
+    color: var(--color-accent);
+    margin: 0;
+  }
+
+  /* 内联变体：嵌入在其他容器内部（如筛选框下方的卡片），不需要独立边框*/
+  &--inline {
+    min-height: 280px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+  }
+}

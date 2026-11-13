@@ -1,0 +1,436 @@
+@use '../variables.scss' as vars;
+@use '../components/v-select-base.scss' as select;
+@use '../components/interaction' as interaction;
+@use './info-pages.scss';
+
+/* Tools 页统一使用控件圆角，保持与首页/Measurement 筛选控件一致*/
+$tools-border-radius: vars.$control-border-radius;
+
+/**
+ * ToolsView 页面样式（Vuetify 版本）
+ * 筛选区使用项目统一的 v-select-base mixin，与其他页面保持一致
+ */
+
+.tools-catalogue {
+  min-width: 0;
+}
+
+.tools-header {
+  margin-bottom: 24px;
+}
+
+.tools-description {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  color: var(--text-body-color);
+  margin: 0;
+}
+
+.tools-tool-count {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: 8px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(var(--v-theme-accent), 0.08);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================================*/
+/* 筛选区布局（CSS Grid，解决间距一致性问题）*/
+/* ============================================================================*/
+
+.tools-filters {
+  display: grid;
+  /* 4 个筛选框等分空间 + Clear 按钮固定宽度*/
+  grid-template-columns: repeat(4, minmax(140px, 1fr)) max-content;
+  gap: 16px;
+  align-items: end;
+  margin: 0 0 16px;
+
+  &--disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+}
+
+.tools-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0; /* 允许 grid 子项收缩*/
+
+  &__select {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+
+    /* 使用项目统一的 v-select mixin*/
+    @include select.v-select-custom(
+      $height: 48px,
+      $input-font-size: var(--font-size-ui),
+      $label-font-size: var(--font-size-ui)
+    );
+  }
+
+  /* 多选框的选中文本样式*/
+  &__selection-text {
+    display: inline-block;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+    font-family: var(--font-family-ui);
+  }
+}
+
+/* Clear 按钮*/
+.tools-filter__clear {
+  min-width: 100px;
+  width: auto;
+  --v-btn-height: 48px;
+  height: 48px;
+  min-height: 48px;
+  border-radius: $tools-border-radius;
+  font-size: var(--font-size-ui);
+  font-weight: 600;
+  letter-spacing: var(--letter-spacing-ui);
+
+  /* 覆盖 Vuetify outlined 变体的默认样式*/
+  &.v-btn--variant-outlined {
+    border: 2px solid var(--color-accent);
+    background: var(--color-surface);
+    color: var(--color-accent);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 4px 8px rgba(var(--v-theme-accent), 0.2);
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(var(--v-theme-accent), 0.5);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.tools-page .tools-filter__clear:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* ============================================================================*/
+/* 响应式断点*/
+/* ============================================================================*/
+
+@media (max-width: 1200px) {
+  .tools-filters {
+    /* 2x2 布局，允许筛选框适当收缩*/
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tools-filter__clear {
+    /* 第三行单独放 Clear（占满整行，但按钮本身不拉伸）*/
+    grid-column: 1 / -1;
+    justify-self: stretch;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .tools-catalogue {
+    padding: 20px 18px 22px;
+  }
+
+  .tools-filters {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .tools-filter__clear {
+    width: 100%;
+  }
+}
+
+.tools-table-shell {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface);
+  border-block: 1px solid var(--color-border-subtle);
+}
+
+.tools-table {
+  --v-table-header-height: 56px;
+  --v-table-row-height: 56px;
+}
+
+.tools-table table {
+  table-layout: fixed;
+  width: max(100%, var(--tools-table-width));
+}
+
+.tools-page .tools-table thead,
+.tools-page .tools-table .v-data-table__th {
+  background-color: var(--color-surface);
+}
+
+/* 确保thead整体z-index高于tbody，解决固定列时垂直滚动覆盖问题*/
+.tools-page .tools-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 20 !important; /* thead整体层级必须高于表体首列TD*/
+}
+
+.tools-page .tools-table .v-data-table__th {
+  position: sticky;
+  top: 0;
+  left: unset !important; /* 默认不固定在左边，防止水平滚动时列头覆盖*/
+  z-index: 6;
+  font-size: var(--font-size-ui);
+  font-weight: 600;
+  color: var(--color-accent);
+  border-bottom: 0;
+  box-shadow: inset 0 -1px var(--color-border-subtle);
+  pointer-events: none;
+}
+
+.tools-table .v-data-table__th .v-data-table-header__sort-icon,
+.tools-table .v-data-table__th .v-data-table-header__content,
+.tools-table .v-data-table__th .header-with-pin,
+.tools-table .v-data-table__th .pin-icon {
+  pointer-events: auto;
+}
+
+.tools-table .v-data-table-header__sort-icon {
+  width: 20px;
+  height: 20px;
+  margin-inline-start: 4px;
+  color: var(--color-accent);
+  font-size: 20px;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.tools-table .v-data-table__th--sorted .v-data-table-header__sort-icon,
+.tools-table .v-data-table__th:hover .v-data-table-header__sort-icon,
+.tools-table .v-data-table__th:focus-visible .v-data-table-header__sort-icon {
+  opacity: 1;
+}
+
+.tools-table .v-table__wrapper {
+  overflow: auto;
+  scrollbar-color: rgba(var(--v-theme-accent), 0.3) rgba(var(--v-theme-accent), 0.08);
+  scrollbar-width: auto;
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: -2px;
+  }
+
+  /* WebKit 滚动条伪元素往往被浏览器默认样式覆盖，因此保留 !important*/
+  &::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(var(--v-theme-accent), 0.08) !important;
+    border-radius: 999px !important;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(var(--v-theme-accent), 0.3) !important;
+    border-radius: 999px !important;
+    border: 2px solid rgba(var(--v-theme-accent), max(0.08, var(--divider-opacity-min)));
+
+    &:hover {
+      background: rgba(var(--v-theme-accent), 0.5) !important;
+    }
+  }
+}
+
+/* 固定列 - 表头首列（使用thead明确区分，避免和TD选择器冲突）*/
+.tools-page .tools-table--pinned thead th:first-child {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 20 !important; /* 高于表体TD*/
+  box-shadow: 6px 0 8px -6px rgba(var(--v-theme-shadow), 0.16);
+  background-color: var(--color-surface-muted-strong) !important;
+}
+
+/* 固定列 - 表体首列（使用tbody明确区分）*/
+.tools-page .tools-table--pinned tbody td:first-child {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 5 !important; /* 必须低于thead的z-index(20)*/
+  background: var(--color-surface);
+  box-shadow: 6px 0 8px -6px rgba(var(--v-theme-shadow), 0.16);
+}
+
+.tools-page .tools-table--pinned thead th:not(:first-child),
+.tools-page .tools-table--pinned tbody td:not(:first-child) {
+  left: unset !important;
+}
+
+.tools-table .v-data-table__td {
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-bottom: 1px solid rgba(var(--v-theme-accent), max(0.08, var(--divider-opacity-min)));
+  font-size: var(--font-size-ui);
+}
+
+.tools-table .v-data-table__tr:hover {
+  background-color: rgba(var(--v-theme-secondary), 0.05);
+}
+
+.header-with-pin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.header-text {
+  flex: 1;
+  white-space: nowrap;
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.pin-icon {
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease, color 0.2s ease, transform 0.25s ease;
+  font-size: var(--font-size-ui);
+  background: transparent;
+  border: none;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center;
+}
+
+.pin-icon:hover {
+  opacity: 1;
+}
+
+.pin-icon.active,
+.pin-icon[aria-pressed='true'] {
+  opacity: 1;
+  color: var(--color-accent);
+}
+
+.pin-icon.active {
+  animation: pin-bounce 260ms ease-out;
+}
+
+@keyframes pin-bounce {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.tool-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.supported-contexts-cell {
+  display: grid;
+  gap: 4px;
+  padding: 8px 0;
+  white-space: normal;
+}
+
+.supported-context {
+  min-width: 0;
+  color: var(--text-body-color);
+  line-height: var(--line-height-ui);
+  overflow-wrap: anywhere;
+}
+
+.tools-link {
+  @include interaction.text-link;
+  display: inline-block;
+  font-weight: 600;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+
+.paper-link,
+.paper-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  max-width: 100%;
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-ui);
+}
+
+.paper-text {
+  color: var(--text-body-color);
+}
+
+.accessibility-text {
+  display: inline-block;
+  color: var(--color-accent);
+  font-weight: 600;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.tools-loading {
+  min-height: 360px;
+}
+
+.tools-empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 360px;
+  background: var(--color-surface);
+  text-align: center;
+}
+
+.tools-empty-card__icon {
+  opacity: 0.5;
+  margin-bottom: 20px;
+}
+
+.tools-empty-card__title {
+  font-size: var(--font-size-section);
+  font-weight: 600;
+  color: var(--color-accent);
+  margin: 0;
+}

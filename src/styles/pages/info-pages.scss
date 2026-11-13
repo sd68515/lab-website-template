@@ -1,0 +1,537 @@
+/**
+ * 信息页共享样式
+ * 供 Contact 与 Download 页面复用的布局、内容区域、链接与响应式样式定义
+ */
+
+@use '../variables.scss' as vars;
+@use '../components/interaction' as interaction;
+
+/* 页面基础布局 */
+
+.about-layout {
+  min-height: 100%;
+  background: var(--color-surface);
+}
+
+/* 页面主容器 - 最大宽度和内边距 */
+.about-main {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 40px 32px 64px;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  color: var(--text-body-color);
+  box-sizing: border-box;
+}
+
+/* 内容区域 */
+
+/* 页面区域容器 - 卡片化分组，与 Help/Tools 保持一致 */
+.about-section {
+  background: var(--color-surface);
+  border: 1px solid rgba(var(--v-theme-accent), max(0.12, var(--divider-opacity-min)));
+  border-radius: vars.$control-border-radius;
+  padding: 22px 26px 24px;
+}
+
+.about-section + .about-section {
+  margin-top: 16px;
+}
+
+.about-section--download {
+  padding: 22px 26px 26px;
+}
+
+.about-section--download + .about-section--download {
+  margin-top: 18px;
+}
+
+/* 区域标题 */
+.about-section-title {
+  text-align: left;
+  color: vars.$accent-color;
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px dashed rgba(var(--v-theme-accent), max(0.22, var(--divider-opacity-min)));
+  font-size: var(--font-size-section);
+  line-height: var(--line-height-section);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-ui);
+}
+
+h1.about-section-title {
+  font-size: var(--font-size-page);
+  line-height: var(--line-height-page);
+}
+
+.about-section-title a {
+  @include interaction.text-link;
+  font-weight: inherit;
+}
+
+/* 区域内容文本 */
+.about-content {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  color: var(--text-body-color);
+}
+
+/* Download 区块正文（非链接）使用纯黑色文本，链接颜色仍由下方链接样式规则控制 */
+.about-content--download {
+  color: var(--text-body-color);
+}
+
+.about-content--download p {
+  margin: 0;
+}
+
+.about-content--download .about-download-intro {
+  margin: 18px 0 0;
+}
+
+.about-download-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+}
+
+.about-download-resource {
+  min-width: 0;
+}
+
+.about-download-link {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  border: 1px solid rgba(var(--v-theme-accent), max(0.14, var(--divider-opacity-min)));
+  border-radius: var(--app-border-radius);
+  background: var(--color-surface);
+  min-height: 76px;
+  overflow: hidden;
+  color: var(--text-body-color);
+  text-align: left;
+}
+
+/* 左侧信息区（约 70%），与右侧按钮区以实线分隔 */
+.about-download-link__info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 13px 18px 13px 16px;
+  border-right: 1px solid rgba(var(--v-theme-accent), max(0.18, var(--divider-opacity-min)));
+}
+
+/* 右侧按钮区，上下叠放两个操作按钮 */
+.about-download-link__actions {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.about-download-link__actions .about-download-link__action {
+  @include interaction.text-link;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 6px 16px;
+  border: none;
+  background: transparent;
+  font-size: var(--font-size-caption);
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* 两个按钮之间用实线分隔 */
+.about-download-link__action + .about-download-link__action {
+  border-top: 1px solid rgba(var(--v-theme-accent), max(0.18, var(--divider-opacity-min)));
+}
+
+.about-download-link__actions .about-download-link__action:focus-visible {
+  outline-offset: -2px;
+}
+
+.about-download-link__main {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.about-download-link__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.about-download-link__title {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  font-weight: 700;
+  color: vars.$accent-color;
+  overflow-wrap: anywhere;
+}
+
+.about-download-link__description {
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  color: var(--text-muted-color);
+}
+
+.about-download-link__icon {
+  color: vars.$accent-color;
+  flex-shrink: 0;
+}
+
+.about-download-link__meta {
+  flex-shrink: 0;
+  margin-left: auto;
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  font-weight: 700;
+  color: var(--text-body-soft);
+}
+
+.about-download-dialog__title {
+  font-size: var(--font-size-section);
+  font-weight: 700;
+  color: vars.$accent-color;
+  padding-bottom: 0;
+}
+
+.about-download-dialog__body {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  color: var(--text-body-color);
+}
+
+.about-download-dialog__url {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: var(--app-border-radius);
+  background: rgba(var(--v-theme-accent), 0.06);
+  font-family: ui-monospace, sfmono-regular, "sf mono", consolas, "liberation mono", monospace;
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  overflow-wrap: anywhere;
+}
+
+.about-download-dialog__actions {
+  padding: 0 20px 20px;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+
+.about-content--citation {
+  color: var(--text-body-color);
+}
+
+.about-section--team {
+  container: research-team / inline-size;
+}
+
+.about-content--team {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'principal' 'students' 'co';
+  gap: 36px;
+}
+
+/* 团队成员列表 */
+
+/* 团队分组容器 */
+.team-group {
+  min-width: 0;
+  container: team-group / inline-size;
+}
+
+.team-group--principal {
+  grid-area: principal;
+}
+
+.team-group--co {
+  grid-area: co;
+}
+
+.team-group--students {
+  grid-area: students;
+}
+
+.team-group__body {
+  border-left: 4px solid var(--color-border);
+  padding: 12px 0 8px 18px;
+}
+
+.team-group__affiliation {
+  color: var(--text-muted-color);
+  font-size: var(--font-size-ui);
+  line-height: 1.6;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+.team-group__location {
+  display: block;
+  margin-top: 2px;
+}
+
+/* 团队成员列表容器 */
+.team-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 人员行根据各组的可用宽度展开，窄列中姓名与联系方式上下排列 */
+.team-list--principal .team-member,
+.team-list--co .team-member {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: 16px;
+  row-gap: 4px;
+  align-items: baseline;
+}
+
+.team-list--co .team-group__affiliation {
+  min-width: 0;
+  margin: 0;
+}
+
+/* 邮箱复制反馈留在联系人所在列，失败时可自然展开 */
+.team-member-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* 主管邮箱按钮（可点击复制） */
+.team-list--principal .team-member-email {
+  @include interaction.text-link;
+  display: inline-block;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  cursor: pointer;
+  text-align: left;
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* 邮箱文本 */
+.team-list--principal .team-member-email-text {
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+/* 邮箱已复制状态 */
+.team-list--principal .team-member-email--copied {
+  color: var(--success-text-color);
+}
+
+/* 成员姓名 */
+.team-member-name {
+  font-weight: 600;
+  color: var(--text-body-color);
+}
+
+/* 成员角色 */
+.team-student-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.team-list--students {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+}
+
+.team-member-role {
+  margin: 0 0 6px;
+  color: var(--text-muted-color);
+  font: 500 var(--font-size-ui)/var(--line-height-ui) var(--font-family-ui);
+}
+
+/* 联系信息 */
+
+/* 联系列表 */
+.contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 联系列表项 */
+.contact-list li {
+  font-size: var(--font-size-body);
+}
+
+/* 内容区域特殊样式 */
+
+/* 段落样式 */
+.about-content p {
+  margin-bottom: 16px;
+}
+
+/* 最后一个段落移除底部边距 */
+.about-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* 子标题样式 */
+.about-content .about-team-heading {
+  font-size: var(--font-size-section);
+  line-height: var(--line-height-section);
+  font-weight: var(--font-weight-semibold);
+  color: vars.$accent-color;
+  margin-bottom: 12px;
+}
+
+/* 内容区域链接样式 */
+.about-content a {
+  @include interaction.text-link;
+  font-weight: 600;
+}
+
+@container team-group (min-width: 480px) {
+  .team-list--principal .team-member {
+    grid-template-columns: minmax(170px, 0.8fr) minmax(0, 1.2fr);
+  }
+}
+
+@container team-group (min-width: 640px) {
+  .team-list--co .team-member {
+    grid-template-columns: max-content minmax(0, 1fr);
+  }
+}
+
+/* 上排两组并列，下排合作研究人员横跨整张卡片 */
+@container research-team (min-width: 1020px) {
+  .about-content--team {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    // 标题和机构共享行高，成员区域按各组内容自然展开。
+    grid-template-rows: [team-heading] auto [team-institution] auto [team-location] auto [team-members] auto [team-end] auto [co-end];
+    grid-template-areas: none;
+    gap: 0 40px;
+  }
+
+  .team-group--principal,
+  .team-group--students {
+    // 尺寸容器的布局隔离会禁用 subgrid；宽屏改由外层卡片负责查询。
+    container-type: normal;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: subgrid;
+    grid-row: team-heading / team-end;
+  }
+
+  .team-group--principal {
+    grid-column: 1;
+  }
+
+  .team-group--students {
+    grid-column: 2;
+  }
+
+  .team-group--principal .team-group__body,
+  .team-group--students .team-group__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: subgrid;
+    grid-row: 2 / -1;
+  }
+
+  .team-group--principal .team-group__affiliation,
+  .team-group--students .team-group__affiliation {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: subgrid;
+    grid-row: 1 / span 2;
+  }
+
+  .team-list--principal,
+  .team-student-groups {
+    grid-row: 3 / -1;
+    align-self: start;
+  }
+
+  .team-list--principal .team-member {
+    grid-template-columns: minmax(170px, 0.8fr) minmax(0, 1.2fr);
+  }
+
+  .team-group--co {
+    grid-row: team-end / co-end;
+    grid-column: 1 / -1;
+    margin-top: 36px;
+  }
+}
+
+/* 响应式布局 */
+
+/* 768px 及以下 - 移动设备适配 */
+@media (max-width: 768px) {
+  .about-main {
+    padding: 32px 20px 48px;
+  }
+
+  .about-section--download {
+    padding: 20px 18px 22px;
+  }
+
+  .about-section-title {
+    font-size: var(--font-size-section);
+  }
+
+  .about-content {
+    font-size: var(--font-size-body);
+  }
+
+  .about-content .about-team-heading {
+    font-size: var(--font-size-section);
+  }
+
+  .about-download-link {
+    min-height: unset;
+  }
+
+  .about-download-actions {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .about-download-link__main {
+    min-width: 0;
+  }
+
+  .about-download-link__text {
+    min-width: 0;
+  }
+
+  .about-download-link__title {
+    font-size: var(--font-size-body);
+    overflow-wrap: anywhere;
+  }
+}

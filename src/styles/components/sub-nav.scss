@@ -1,0 +1,160 @@
+@use '../variables.scss' as vars;
+@use './nav-mixins.scss' as mix;
+@use '../mixins.scss' as util;
+
+.metric-sub-nav {
+  width: 100%;
+  min-height: 0;
+  height: 0;
+}
+
+.metric-sub-nav__bar {
+  position: fixed;
+  top: vars.$header-height;
+  left: 0;
+  right: var(--scrollbar-width, 0px);
+  z-index: 650;
+  box-sizing: border-box;
+  background-color: vars.$color-nav-sub-background;
+  border-top: 1px dashed vars.$color-nav-text-active;
+  border-bottom: 1px solid vars.$color-nav-text-active;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: vars.$subnav-height;
+  padding: 0 vars.$spacing-xl;
+  width: auto;
+}
+
+// 滚动箭头按钮 - 使用绝对定位，不占用文档流空间
+.metric-sub-nav__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: none; // 默认隐藏（不可滚动时）
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: linear-gradient(to right, vars.$color-nav-sub-background 60%, transparent);
+  color: vars.$color-nav-text-default;
+  cursor: pointer;
+  border-radius: var(--app-border-radius);
+  box-sizing: border-box;
+  transition: opacity 0.15s ease;
+
+  &:hover:not(.is-hidden) {
+    color: vars.$color-nav-text-active;
+  }
+
+  svg {
+    display: block;
+  }
+
+  // 可滚动时显示箭头
+  &.is-visible {
+    display: flex;
+  }
+
+  // 到达边界时隐藏
+  &.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+    cursor: default;
+  }
+}
+
+.metric-sub-nav__arrow--left {
+  left: vars.$spacing-sm;
+  padding-right: 8px;
+  background: linear-gradient(to right, vars.$color-nav-sub-background 70%, transparent);
+}
+
+.metric-sub-nav__arrow--right {
+  right: calc(vars.$spacing-sm + var(--scrollbar-width, 0px));
+  padding-left: 8px;
+  background: linear-gradient(to left, vars.$color-nav-sub-background 70%, transparent);
+  transition: opacity 0.15s ease;
+}
+
+.metric-sub-nav__menu {
+  width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: vars.$spacing-md;
+  height: vars.$subnav-height;
+  min-height: vars.$subnav-height;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.metric-sub-nav__menu::-webkit-scrollbar {
+  display: none;
+}
+
+.metric-sub-nav__item {
+  @include mix.nav-item-base(vars.$subnav-height, vars.$subnav-font-size);
+  position: relative;
+  text-decoration: none;
+  color: vars.$color-nav-text-default;
+  // 基线与 Home 按钮对齐；首项额外偏移由具名视觉校正变量控制
+  padding-left: vars.$spacing-nav-item-x;
+  padding-right: vars.$spacing-md;
+  border-radius: var(--app-border-radius);
+  transition: color 0.2s ease, background-color 0.2s ease;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  min-width: 0;
+  font-weight: 400;
+  font-size: vars.$subnav-font-size;
+  font-family: var(--font-family-ui);
+  @include util.no-select;
+}
+
+.metric-sub-nav__item:first-child {
+  padding-left: calc(#{vars.$spacing-nav-item-x} + #{vars.$subnav-first-item-optical-offset});
+}
+
+.metric-sub-nav__item:hover {
+  @include mix.nav-item-hover-style();
+}
+
+.metric-sub-nav__item.is-active {
+  @include mix.nav-item-active-style();
+}
+
+.metric-sub-nav__item::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  transform: translateX(-50%);
+  width: vars.$nav-active-line-width;
+  height: vars.$nav-active-line-height;
+  background: vars.$color-nav-text-active;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.metric-sub-nav__item.is-active::after {
+  opacity: 1;
+}
+
+@media (max-width: 900px) {
+  .metric-sub-nav__item {
+    font-size: vars.$subnav-font-size-medium;
+  }
+}
+
+@media (max-width: 600px) {
+  .metric-sub-nav__item {
+    flex-shrink: 0;
+    font-size: vars.$subnav-font-size-small;
+  }
+}

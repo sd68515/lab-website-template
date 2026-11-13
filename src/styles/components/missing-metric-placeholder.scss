@@ -1,0 +1,67 @@
+/**
+ * MissingMetricPlaceholder 组件样式
+ * 展示指标缺失或不可用时的占位提示
+ */
+@use '../variables.scss' as vars;
+
+.missing-metric-placeholder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  background: var(--color-surface-muted-strong);
+  border: 2px dashed rgba(var(--v-theme-accent), max(0.35, var(--divider-opacity-min)));
+  border-radius: var(--app-border-radius);
+  padding: 32px 24px;
+  text-align: center;
+  gap: 16px;
+
+  &__icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__icon-symbol {
+    color: var(--color-accent);
+  }
+
+  &__content {
+    max-width: 600px;
+  }
+
+  &__title {
+    font-size: var(--font-size-section);
+    font-weight: 600;
+    color: var(--text-muted-color);
+    margin: 0 0 12px 0;
+    line-height: var(--line-height-section);
+    font-family: var(--font-family-editorial);
+  }
+
+  &__reason {
+    font-size: var(--font-size-ui);
+    margin: 0 0 8px 0;
+    font-weight: 500;
+    line-height: var(--line-height-ui);
+
+    &--out-of-metric {
+      color: var(--color-accent);
+    }
+
+    &--default {
+      color: var(--text-muted-color);
+    }
+  }
+
+  &__description {
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-caption);
+    color: var(--text-muted-color);
+    margin: 0;
+  }
+}

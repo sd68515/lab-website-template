@@ -1,0 +1,415 @@
+/**
+ * Efficiency metrics 页面样式
+ * 覆盖范围：
+ * - Running time / Memory efficiency 两个页面
+ * - EfficiencyMetricFilter / EfficiencyLineChart 组件
+ */
+
+@use '../mixins.scss' as mixins;
+@use './v-select-base.scss' as select;
+@use './interaction' as interaction;
+
+.efficiency-metric-page {
+  /* 图表高度随浏览器视口变化，同时限制最大高度。*/
+  --metric-chart-height: clamp(420px, 52vh, 520px);
+  --metric-chart-height-tablet: clamp(320px, 52vh, 420px);
+}
+
+.efficiency-metric-page .metric-filters,
+.efficiency-metric-page .metric-chart {
+  width: 100%;
+  background: var(--color-surface);
+  box-shadow: none;
+
+  @include mixins.respond('tablet') {
+    padding: 16px;
+  }
+}
+
+/* 筛选区域*/
+.efficiency-metric-page .metric-filters {
+  margin-top: var(--metric-section-gap, 32px);
+  padding: 28px 32px;
+  border-radius: var(--app-border-radius) var(--app-border-radius) 0 0;
+  border: 1px solid var(--color-border-subtle);
+  border-bottom: none;
+
+  @include mixins.respond('tablet') {
+    padding: 16px;
+  }
+}
+
+/* 图例区域（筛选和图表之间）*/
+.efficiency-metric-page .metric-legend {
+  width: 100%;
+  background: var(--color-surface);
+  padding: 0 32px;
+  border-left: 1px solid var(--color-border-subtle);
+  border-right: 1px solid var(--color-border-subtle);
+
+  @include mixins.respond('tablet') {
+    padding: 0 16px;
+  }
+}
+
+/* 图表区域（带聚焦标签的容器）*/
+.efficiency-metric-page .metric-chart-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.efficiency-metric-page .metric-chart {
+  padding: 28px 32px;
+  border-radius: 0 0 var(--app-border-radius) var(--app-border-radius);
+  border: 1px solid var(--color-border-subtle);
+  border-top: none;
+
+  @include mixins.respond('tablet') {
+    padding: 16px;
+  }
+}
+
+.efficiency-metric-page .metric-chart .subplot-placeholder {
+  margin-top: 0;
+}
+
+.efficiency-metric-page .metric-ps-note {
+  margin-top: 16px;
+  font-family: var(--font-family-ui);
+  font-size: var(--font-size-body);
+  color: var(--text-body-color);
+  line-height: var(--line-height-body);
+}
+
+.efficiency-metric-page .metric-ps-note--warning {
+  color: var(--error-text-color);
+  font-weight: 600;
+}
+
+.efficiency-metric-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  align-items: center;
+  flex: 1 1 auto;
+
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &__group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1 1 180px;
+    min-width: 160px;
+  }
+
+  &__group--modality {
+    flex-basis: 280px;
+    min-width: min(100%, 280px);
+  }
+
+  &__group--large-scale {
+    flex-basis: 310px;
+    min-width: min(100%, 310px);
+  }
+
+  &__select {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+
+    @include select.v-select-custom(
+      $height: 48px,
+      $input-font-size: var(--font-size-ui),
+      $label-font-size: var(--font-size-ui)
+    );
+
+    &--scale {
+      flex: 1 1 180px;
+    }
+
+    &--topology {
+      flex: 1 1 200px;
+    }
+
+    &--tools {
+      flex: 2 1 260px;
+
+      /* 窄屏下 select 宽度收缩时，约束 selection 文本不溢出*/
+      .v-field__input {
+        min-width: 0;
+      }
+    }
+  }
+
+  &__tools-selection {
+    display: inline-block;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    /* 与其他筛选框选中文本字重保持一致*/
+    font-weight: 600;
+    font-family: var(--font-family-ui);
+  }
+
+  &__group--axis-scale,
+  &__group--memory-source {
+    flex: 0 0 auto;
+    min-width: unset;
+    align-items: center;
+    margin-left: 8px;
+  }
+
+  &__toggle-label {
+    flex: 0 0 auto;
+    margin: 0;
+    color: var(--text-muted-color);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-caption);
+    font-weight: 700;
+    line-height: var(--line-height-caption);
+    white-space: nowrap;
+  }
+
+  &__axis-scale,
+  &__memory-source {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    gap: 0;
+    height: 52px;
+    overflow: hidden;
+    border: 2px solid var(--color-border);
+    border-radius: var(--app-border-radius);
+    background: var(--color-surface);
+  }
+
+  &__axis-scale-btn,
+  &__memory-source-btn {
+    flex: 0 0 auto;
+    min-width: 84px;
+    --v-btn-height: 52px;
+    height: 52px;
+    min-height: 52px;
+    padding: 0 12px;
+    border-radius: 0;
+    letter-spacing: var(--letter-spacing-ui);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-ui);
+    font-weight: 600;
+
+    &.v-btn--variant-text {
+      @include interaction.segmented-button;
+    }
+  }
+
+  &__memory-source-btn + &__memory-source-btn,
+  &__axis-scale-btn + &__axis-scale-btn {
+    border-left: 1px solid var(--color-border);
+  }
+
+  /* Clear/All 切换按钮（基于 v-btn variant="outlined"）*/
+  &__tools-toggle {
+    flex: 0 0 auto;
+    /* Keep a stable minimum while allowing longer fixed translations to fit.*/
+    width: auto;
+    min-width: 72px;
+    /* 高度与筛选框一致（使用 Vuetify CSS 变量）*/
+    --v-btn-height: 52px;
+    height: 52px;
+    min-height: 52px;
+    padding: 0 12px;
+    border-radius: var(--app-border-radius);
+    letter-spacing: var(--letter-spacing-ui);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-ui);
+    font-weight: 600;
+
+    /* 覆盖 Vuetify outlined 变体的默认样式*/
+    &.v-btn--variant-outlined {
+      border: 2px solid var(--color-border);
+      color: var(--color-accent);
+      background: var(--color-surface);
+
+      &:hover:not(:disabled) {
+        border-color: var(--color-accent);
+        background: rgba(var(--v-theme-accent), 0.04);
+      }
+
+      &:focus-visible {
+        border-color: var(--color-accent);
+        outline: 2px solid rgba(var(--v-theme-accent), 0.3);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  @include mixins.respond('tablet') {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+
+    &__group {
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      gap: 12px;
+      flex: 0 0 auto;
+      min-width: unset;
+    }
+
+    &__group--axis-scale,
+    &__group--memory-source {
+      margin-left: 0;
+    }
+
+    &__toggle-label {
+      padding-left: 2px;
+      line-height: 1.2;
+    }
+
+    &__axis-scale,
+    &__memory-source {
+      width: 100%;
+      justify-content: stretch;
+    }
+
+    &__axis-scale-btn,
+    &__memory-source-btn {
+      flex: 1 1 auto;
+      width: 100%;
+      min-width: unset;
+    }
+
+    &__select {
+      width: 100%;
+      min-width: unset;
+      flex: 0 0 auto;
+    }
+
+    &__tools-toggle {
+      width: 100%;
+    }
+  }
+}
+
+.efficiency-line-chart {
+  width: 100%;
+  height: var(--metric-chart-height, 520px);
+  cursor: default;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  @include mixins.respond('tablet') {
+    height: var(--metric-chart-height-tablet, 420px);
+  }
+}
+
+.efficiency-line-chart canvas {
+  cursor: default;
+}
+
+.efficiency-line-chart__wrapper--dragging .efficiency-line-chart,
+.efficiency-line-chart__wrapper--dragging .efficiency-line-chart canvas {
+  cursor: grabbing;
+}
+
+.efficiency-line-chart__wrapper {
+  width: 100%;
+}
+
+.efficiency-line-chart__data {
+  margin-top: 20px;
+  border-top: 1px solid var(--color-border-subtle);
+  color: var(--text-body-color);
+  font-family: var(--font-family-ui);
+  font-size: var(--font-size-ui);
+
+  summary {
+    padding: 12px 4px;
+    color: var(--color-link);
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--color-link-hover);
+      background: var(--interaction-hover-bg);
+    }
+  }
+
+  summary:focus-visible,
+  &-scroll:focus-visible {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: 2px;
+  }
+}
+
+.efficiency-line-chart__data-scroll {
+  max-height: 24rem;
+  overflow: auto;
+}
+
+.efficiency-line-chart__data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+
+  caption {
+    padding: 8px 12px 16px;
+    text-align: left;
+  }
+
+  th,
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: var(--color-surface);
+  }
+
+  tbody th {
+    font-weight: 600;
+  }
+}
+
+.efficiency-line-chart__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  @include mixins.respond('tablet') {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.efficiency-line-chart__mode {
+  font-size: var(--font-size-caption);
+  color: var(--text-body-soft);
+  line-height: var(--line-height-caption);
+  font-weight: 600;
+}
+
+
+/* 效率指标页面 v-select 下拉菜单选项字重统一*/
+/* 确保 Tools 筛选框下拉选项字重与其他筛选框一致*/
+.efficiency-metric-page .v-overlay__content .v-list-item-title {
+  font-weight: 600;
+  font-family: var(--font-family-ui);
+}

@@ -1,0 +1,11 @@
+{
+  "rna-velocity": [
+    "MethodA",
+    "MethodB"
+  ],
+  "chromatin-aided": [],
+  "spatial-velocity": [],
+  "lineage-velocity": [],
+  "cycle-inference": [],
+  "chromatin-velocity": []
+}

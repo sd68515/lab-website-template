@@ -1,0 +1,624 @@
+/**
+ * MethodResult 页面样式
+ * 方法详情页展示单个工具在多个数据集下的结果。
+ * 结果卡片和导航基础样式与数据集详情页共享。
+ */
+@use '../components/result-shared.scss';
+@use '../components/metric-results.scss';
+@use '../variables.scss' as vars;
+@use '../mixins.scss' as util;
+@use '../components/interaction' as interaction;
+
+/* 页面主容器 */
+
+.method-result-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: var(--color-surface);
+
+  .method-result-main {
+    /* v-main 已为顶部导航预留空间；结果页只需补充少量呼吸感，避免重复叠加导致英雄卡/侧栏顶部不齐*/
+    padding-top: 8px;
+    background: var(--color-surface);
+  }
+
+  /* 导航栏标题区域（复用 dataset-result 样式） */
+
+  /* 导航分组由 components/result-navigation.scss 统一维护。 */
+
+  /* ⭐ 导航项工具提示（MethodResult 特有） */
+
+  /* 工具提示容器 - 用于显示完整的数据集名称 */
+  .method-result-nav-tooltip {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 10px 24px rgba(var(--v-theme-accent), 0.18);
+    border-radius: var(--app-border-radius);
+    padding: 0;
+  }
+
+  /* 工具提示内容文本样式 */
+  .method-result-nav-tooltip .el-tooltip__content {
+    font-size: var(--font-size-body);
+    color: var(--color-accent);
+    padding: 14px 18px;
+    line-height: var(--line-height-body);
+  }
+
+  /* ⭐ 主内容区域（MethodResult 特有） */
+
+  /* 主内容容器 - 为左侧固定导航栏留出空间 */
+  .method-result-content {
+    margin-left: 320px;  /* 左侧导航栏宽度 280px + 间距 40px*/
+    padding: 20px 32px 64px;
+    min-height: 0;
+  }
+
+  .method-result-footer {
+    margin-top: 40px;
+  }
+
+  /* 页面头部区域 */
+  .method-result-header {
+    margin-bottom: 30px;
+  }
+
+  .method-result-header .dataset-result-status-block {
+    margin: 0;
+  }
+
+  /* ⭐ 工具元数据区域（MethodResult 特有） */
+
+  /* 工具元数据基础样式 - 包含正常状态、加载中、空状态 */
+  .method-result-tool-meta,
+  .method-result-tool-meta-loading,
+  .method-result-tool-meta-empty {
+    font-size: var(--font-size-caption);
+    color: rgba(var(--v-theme-accent), 0.85);
+  }
+
+  /* 加载中状态 - 斜体文本 */
+  .method-result-tool-meta-loading {
+    font-style: italic;
+  }
+
+  /* 工具元数据行容器 - 垂直布局 */
+  .method-result-tool-meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(var(--v-theme-accent), max(0.15, var(--divider-opacity-min)));
+  }
+
+  /* 最后一行移除底部边框 */
+  .method-result-tool-meta-row:last-of-type {
+    border-bottom: none;
+  }
+
+  /* 成对显示的元数据行 - 水平布局 */
+  .method-result-tool-meta-row--paired {
+    flex-direction: row;
+    gap: 24px;
+  }
+
+  /* 单个元数据键值对容器 */
+  .method-result-tool-meta-pair {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* 元数据键（标签）*/
+  .method-result-tool-meta-key {
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+
+  /* 元数据值 */
+  .method-result-tool-meta-value {
+    color: rgba(var(--v-theme-accent), 0.85);
+    word-break: break-word;
+  }
+
+  /* 元数据区域链接样式 */
+  .method-result-link {
+    @include interaction.text-link;
+    font-weight: 600;
+  }
+
+  /* 页面主体区域 - 垂直布局 */
+  .method-result-body {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  /* 重试按钮 - 用于数据加载失败时 */
+  .method-result-retry-btn {
+    border: none;
+    border-radius: var(--app-border-radius);
+    padding: 10px 24px;
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
+    color: var(--color-on-accent);
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    @include util.no-select;
+  }
+
+  /* 重试按钮 hover 效果 - 轻微上浮和阴影 */
+  .method-result-retry-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(var(--v-theme-accent), 0.22);
+  }
+
+  /* 状态块容器 - 用于显示加载、错误等状态 */
+  .method-result-status-block {
+    margin: 48px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 信息占位符 */
+  .method-result-info-placeholder {
+    width: 100%;
+  }
+
+  /* 元数据不可用简洁提示 */
+  .method-result-metadata-unavailable {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: var(--color-surface-muted);
+    border-radius: var(--app-border-radius);
+    /* 移除边框，避免与外层 .dataset-result-info 的边框形成双边框*/
+  }
+
+  .method-result-metadata-unavailable__text {
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-body);
+    font-weight: 500;
+    color: var(--text-muted-color);
+  }
+
+  /* 数据集头部区域 */
+
+  /* 数据集头部容器 - 包含标题和元数据折叠按钮 */
+  .method-result-dataset-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  /* 数据集标题 */
+  .method-result-dataset-title {
+    font-size: var(--font-size-section);
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+
+  /* ⭐ 可折叠元数据区域（MethodResult 特有） */
+
+  /* 元数据容器 */
+  .method-result-metadata {
+    margin-bottom: 20px;
+  }
+
+  /* 折叠状态的元数据卡片 */
+  .method-result-metadata-collapsed {
+    position: relative;
+    background: rgba(var(--v-theme-accent), 0.05);
+    border: 1px solid rgba(var(--v-theme-accent), max(0.18, var(--divider-opacity-min)));
+    border-radius: var(--app-border-radius);
+    padding: 12px 16px;
+  }
+
+  /* 折叠状态的元数据行 */
+  .method-result-metadata-line {
+    display: flex;
+    gap: 12px;
+    font-size: var(--font-size-caption);
+    color: var(--color-accent);
+  }
+
+  /* 元数据键（标签）*/
+  .method-result-metadata-key {
+    font-weight: 600;
+  }
+
+  /* 折叠状态底部渐变遮罩层 - 提示可展开 */
+  .method-result-metadata-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 36px;
+    border-radius: 0 0 var(--app-border-radius) var(--app-border-radius);
+    background: linear-gradient(180deg, rgba(var(--v-theme-surface), 0) 0%, rgba(var(--v-theme-accent), 0.18) 100%);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  /* 遮罩层中的展开箭头 */
+  .method-result-metadata-arrow {
+    font-size: var(--font-size-body);
+    color: var(--color-accent);
+    margin-bottom: 4px;
+  }
+
+  /* 展开状态的元数据卡片 */
+  .method-result-metadata-expanded {
+    border: 1px solid rgba(var(--v-theme-accent), max(0.18, var(--divider-opacity-min)));
+    border-radius: var(--app-border-radius);
+    padding: 16px;
+    background: rgba(var(--v-theme-accent), 0.04);
+    display: grid;
+    gap: 12px;
+  }
+
+  /* 展开状态的信息键（标签）*/
+  .method-result-info-key {
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+
+  /* 展开状态的信息值 */
+  .method-result-info-value {
+    color: rgba(var(--v-theme-accent), 0.9);
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* 展开状态的信息区域链接 */
+  .method-result-info-link {
+    @include interaction.text-link;
+  }
+
+  /* 信息区域图片容器 */
+  .method-result-info-image {
+    max-width: 360px;
+    border-radius: var(--app-border-radius);
+    overflow: hidden;
+    border: 1px solid rgba(var(--v-theme-accent), max(0.2, var(--divider-opacity-min)));
+  }
+
+  /* 图片加载错误提示 */
+  .method-result-info-image-error {
+    padding: 12px;
+    text-align: center;
+    font-size: var(--font-size-caption);
+    color: rgba(var(--v-theme-accent), 0.7);
+  }
+
+  /* 结果区域小节标题（如 "Velocity Results"） */
+  .method-result-section-title {
+    font-size: var(--font-size-body);
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-bottom: 16px;
+  }
+
+  /* Velocity 结果图片网格 - 2列布局 */
+  .method-result-velocity-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  /* 区域消息提示框 - 用于显示提示信息 */
+  .method-result-section-message {
+    padding: 16px;
+    border-radius: var(--app-border-radius);
+    border: 1px dashed rgba(var(--v-theme-accent), max(0.3, var(--divider-opacity-min)));
+    background: rgba(var(--v-theme-accent), 0.05);
+    font-size: var(--font-size-caption);
+    color: rgba(var(--v-theme-accent), 0.8);
+  }
+
+  /* 警告样式的占位符 */
+  .method-result-placeholder--alert {
+    color: var(--error-text-color);
+  }
+
+  /* 柔和样式的占位符 */
+  .method-result-placeholder--muted {
+    color: rgba(var(--v-theme-accent), 0.7);
+  }
+
+  /* 分隔线 */
+  .method-result-divider {
+    height: 1px;
+    border-top: 2px dashed rgba(var(--v-theme-accent), max(0.35, var(--divider-opacity-min)));
+  }
+
+  /* 空状态提示框 */
+  .method-result-empty {
+    padding: 40px;
+    text-align: center;
+    color: rgba(var(--v-theme-accent), 0.68);
+    border: 1px dashed rgba(var(--v-theme-accent), max(0.3, var(--divider-opacity-min)));
+    border-radius: var(--app-border-radius);
+    background: rgba(var(--v-theme-accent), 0.05);
+  }
+
+  /* 图片占位符和图片加载错误容器 */
+  .method-result-image-placeholder,
+  .method-result-image-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: rgba(var(--v-theme-accent), 0.6);
+    font-size: var(--font-size-caption);
+    border-radius: var(--app-border-radius);
+    background: rgba(var(--v-theme-accent), 0.08);
+  }
+
+  /* 方法结果信息区域 */
+
+  /* 工具信息区域 */
+  .method-result-tool-info {
+    margin-bottom: 30px;
+  }
+
+  /* 英雄卡片（页面顶部信息卡） */
+  .method-result-header .dataset-result-info.method-result-tool-info {
+    background: var(--color-surface);
+    border: 1px solid var(--color-accent);
+  }
+
+  /* 工具信息表格：仅最后一行移除底部虚线，避免成对行之间丢失分隔线 */
+  .method-result-tool-info-table .dataset-result-info-row:last-child {
+    border-bottom: none;
+  }
+
+  /* 工具信息表格：成对行内部键值对与普通行保持同一列起始 */
+  .method-result-tool-info-table .method-result-info-pair {
+    gap: var(--space-4);
+    align-items: baseline;
+  }
+
+  /* 信息行基础样式 - 单列布局 */
+  .dataset-result-info-row.method-result-info-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  /* 信息行成对显示 - 2列布局 */
+  .dataset-result-info-row.method-result-info-row--pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* 信息行三列显示 - 3列布局 */
+  .dataset-result-info-row.method-result-info-row--triple {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Labels wrap within a bounded column without hiding translated or spaced text. */
+  .method-result-info-pair {
+    display: grid;
+    grid-template-columns: minmax(0, 10rem) minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: start;
+    min-width: 0;
+  }
+
+  /* 元数据外层容器 */
+  .method-result-metadata-container {
+    display: flex;
+    flex-direction: column;
+    border-radius: 0;
+    overflow: visible;
+    margin: 0 0 25px;
+  }
+
+  /* 元数据摘要区域 - 简化结构，始终有底部分隔线 */
+  .method-result-metadata-summary {
+    background: var(--color-surface);
+    margin: -25px -25px 0; /* 抵消外层 padding，紧贴 header 并占满卡片宽度 */
+    padding: 20px 25px 0;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px dashed rgba(var(--v-theme-accent), max(0.25, var(--divider-opacity-min)));
+
+    /* 摘要区域内的信息表格 - 无边框 */
+    .dataset-result-info-table {
+      border: none;
+      gap: 0;
+    }
+
+    /* 摘要区域内的信息行 - 无分隔线 */
+    .dataset-result-info-row {
+      border-bottom: none;
+      padding: 8px 0;
+    }
+  }
+
+  /* 元数据详情区域 - 展开时在 summary 内部 */
+  .method-result-metadata-details {
+    background: var(--color-surface);
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    overflow: hidden;
+
+    /* 详情区域内的信息表格 */
+    .method-result-metadata-details-table {
+      display: flex;
+      flex-direction: column;
+      border-top: 1px dashed rgba(var(--v-theme-accent), max(0.2, var(--divider-opacity-min)));
+      padding-top: 12px;
+      margin-top: 8px;
+    }
+
+    /* 详情区域内的信息行 - 有分隔线 */
+    .dataset-result-info-row {
+      padding: 10px 0;
+      border-bottom: 1px dashed rgba(var(--v-theme-accent), max(0.15, var(--divider-opacity-min)));
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  /* 元数据切换按钮容器 - 始终在底部 */
+  .method-result-metadata-toggle-container {
+    background: transparent;
+    padding: 12px 0 16px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* 切换按钮 - Material Design 风格 */
+  .method-result-metadata-toggle {
+    font-weight: 500;
+    letter-spacing: var(--letter-spacing-ui);
+  }
+
+  /* 数据集分隔线 */
+  .method-result-divider {
+    height: 0;
+    border-top: 2px dashed rgba(var(--v-theme-accent), max(0.45, var(--divider-opacity-min)));
+    margin: 50px 0;
+  }
+
+  /* 工具头部（复用 dataset-result 样式） */
+
+  /* 工具头部容器 */
+  .method-result-tool-header {
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
+    color: var(--color-on-accent);
+    padding: 22px 28px;
+    min-height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  /* 工具头部标题 */
+  .method-result-tool-header .dataset-result-tool-title {
+    color: inherit;
+    margin: 0;
+    font-size: var(--font-size-panel);
+    line-height: var(--line-height-panel);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  /* 数据集卡片头部与数据集结果页工具卡保持一致。 */
+  .method-result-dataset-card-header {
+    background: var(--color-surface-muted-strong);
+    color: var(--color-accent);
+    padding: 20px 25px;
+    border-bottom: 1px solid rgba(var(--v-theme-accent), max(0.1, var(--divider-opacity-min)));
+  }
+
+  .method-result-dataset-card-header .method-result-dataset-title {
+    margin: 0;
+    font-size: var(--font-size-panel);
+    line-height: var(--line-height-panel);
+    font-weight: var(--font-weight-semibold);
+    font-family: var(--font-family-ui);
+    color: inherit;
+  }
+
+  .method-result-dataset-card-header .method-result-dataset-subtitle {
+    margin: 6px 0 0;
+    font-size: var(--font-size-body);
+    color: inherit;
+    opacity: 0.85;
+  }
+
+  .method-result-noresult-wrapper {
+    margin-bottom: 16px;
+  }
+
+  .method-result-noresult-detail {
+    margin: 12px 0 0;
+    color: var(--text-muted-color);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
+    text-align: center;
+    white-space: pre-line;
+  }
+
+  /* 英雄卡成对行在 <=1100px 提前回退为"独立一行"显示，避免约 1000px 宽度区间被硬挤成竖排*/
+  @media (max-width: 1100px) {
+    /* 顶部工具信息卡：成对行变单列，避免 Journal/Year、Platform/Deep learning 被挤成逐字竖排 */
+    .method-result-tool-info-table .dataset-result-info-row.method-result-info-row--pair {
+      grid-template-columns: 1fr;
+      gap: 0;
+      padding: 0;
+      border-bottom: none;
+    }
+
+    .method-result-tool-info-table .dataset-result-info-row.method-result-info-row--pair .method-result-info-pair {
+      padding: 14px 0;
+      border-bottom: 1px dashed rgba(var(--v-theme-accent), max(0.15, var(--divider-opacity-min)));
+    }
+
+    .method-result-tool-info-table .dataset-result-info-row.method-result-info-row--pair:last-child .method-result-info-pair:last-child {
+      border-bottom: none;
+    }
+
+    /* 摘要区域：成对行变单列 */
+    .method-result-metadata-summary .dataset-result-info-row.method-result-info-row--pair {
+      grid-template-columns: 1fr;
+      gap: 0;
+      padding: 0;
+    }
+
+    .method-result-metadata-summary .dataset-result-info-row.method-result-info-row--pair .method-result-info-pair {
+      padding: 8px 0;
+    }
+
+    /* 详情区域：成对行变单列，保持分隔线一致性 */
+    .method-result-metadata-details .dataset-result-info-row.method-result-info-row--pair {
+      grid-template-columns: 1fr;
+      gap: 0;
+      padding: 0;
+      border-bottom: none;
+    }
+
+    .method-result-metadata-details .dataset-result-info-row.method-result-info-row--pair .method-result-info-pair {
+      padding: 10px 0;
+      border-bottom: 1px dashed rgba(var(--v-theme-accent), max(0.15, var(--divider-opacity-min)));
+    }
+
+    .method-result-metadata-details .dataset-result-info-row.method-result-info-row--pair:last-child .method-result-info-pair:last-child {
+      border-bottom: none;
+    }
+  }
+
+  /* 窄屏（<=768px）不显示“侧栏形态”，导航改为顶部布局（保证基本可用）*/
+  @media (max-width: 768px) {
+    .method-result-content {
+      margin-left: 0;
+      padding: 20px 20px 48px;
+    }
+
+    .dataset-result-info-row.method-result-info-row--pair,
+    .dataset-result-info-row.method-result-info-row--triple {
+      grid-template-columns: 1fr;
+    }
+
+    .method-result-info-pair {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+
+  }
+
+}

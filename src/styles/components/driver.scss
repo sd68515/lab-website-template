@@ -1,0 +1,14 @@
+/**
+ * Driver.js 引导提示样式覆写
+ * 调整标题与按钮配色以匹配项目主题
+ */
+div#driver-popover-item .driver-popover-title {
+  color: var(--color-accent);
+}
+
+div#driver-popover-item .driver-popover-footer .driver-next-btn {
+  background-color: var(--color-accent);
+  color: var(--color-on-accent);
+  text-shadow: none;
+  border-radius: var(--app-border-radius);
+}

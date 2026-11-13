@@ -16,6 +16,15 @@ function includeLicenses(): Plugin {
   ] as const
   return {
     name: 'include-licenses',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const filename = req.url?.split('?')[0]?.replace(/^\/licenses\//, '')
+        const file = files.find(([name]) => name === filename)
+        if (!file) return next()
+        res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+        res.end(readFileSync(new URL(file[1], import.meta.url), 'utf8'))
+      })
+    },
     generateBundle() {
       for (const [filename, source] of files) {
         this.emitFile({ type: 'asset', fileName: `licenses/${filename}`, source: readFileSync(new URL(source, import.meta.url), 'utf8') })

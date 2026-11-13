@@ -1,0 +1,89 @@
+/* Shared interactive states; the theme supplies contrast-safe color pairs. */
+@mixin primary-action {
+  --v-hover-opacity: 0;
+  --v-focus-opacity: 0;
+  gap: 8px;
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  box-shadow: 0 2px 4px var(--color-shadow);
+  transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+
+  .v-btn__overlay {
+    opacity: 0;
+  }
+
+  &:hover:not(:disabled) {
+    color: var(--color-on-accent);
+    background: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+    box-shadow: 0 4px 12px var(--color-shadow);
+  }
+
+  &:active:not(:disabled) {
+    background: var(--color-accent-dark);
+    border-color: var(--color-accent-dark);
+    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--focus-ring-color);
+    outline-offset: 3px;
+  }
+}
+
+@mixin segmented-button {
+  color: var(--color-accent);
+  background: transparent;
+  transition: color 0.16s ease, background-color 0.16s ease;
+
+  .v-btn__overlay,
+  .v-btn__underlay {
+    border-radius: 0;
+    opacity: 0;
+  }
+
+  &:hover:not(:disabled) {
+    background: var(--interaction-hover-bg);
+  }
+
+  &[aria-pressed='true'] {
+    color: var(--color-on-accent);
+    background: var(--color-accent);
+
+    &:hover:not(:disabled) {
+      background: var(--color-accent-hover);
+    }
+
+    &:focus-visible {
+      outline-color: var(--color-on-accent);
+    }
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--focus-ring-color);
+    outline-offset: -4px;
+  }
+}
+
+@mixin text-link {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  border-radius: var(--app-border-radius);
+  transition: color 0.16s ease, background-color 0.16s ease;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-link-hover);
+    background-color: var(--interaction-hover-bg);
+    text-decoration-thickness: 2px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: 3px;
+  }
+}

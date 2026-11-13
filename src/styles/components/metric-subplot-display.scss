@@ -1,0 +1,15 @@
+/* Angle consistency / Consistency score 在 DatasetResult / MethodResult 中的子图头部 */
+.metric-subplot-card {
+  /* 不再添加额外边框与背景，避免嵌套矩形 */
+  padding: 0;
+}
+
+.subplot-display-viewport {
+  min-height: 0;
+}
+
+.subplot-display__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

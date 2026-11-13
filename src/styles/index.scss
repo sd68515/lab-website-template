@@ -1,3 +1,9 @@
+/**
+ * 样式入口文件
+ * 汇总项目中的变量、全局样式、组件样式与页面样式
+ */
 @use './variables.scss';
 @use './vuetify-settings.scss';
 @use './global.scss';
+@use './components/table.scss';
+@use './components/driver.scss';

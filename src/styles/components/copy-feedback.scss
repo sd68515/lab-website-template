@@ -1,0 +1,25 @@
+.copy-feedback {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+
+  &--error {
+    position: static;
+    display: block;
+    width: auto;
+    height: auto;
+    margin-top: 4px;
+    color: var(--error-text-color);
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-caption);
+  }
+
+  &__value {
+    margin-left: 6px;
+    font: inherit;
+    color: var(--text-body-color);
+    overflow-wrap: anywhere;
+    user-select: text;
+  }
+}

@@ -1,0 +1,16 @@
+.result-image-loading {
+  position: relative;
+  width: 100%;
+
+  &[data-image-state='idle'],
+  &[data-image-state='loading'] {
+    min-height: 200px;
+    background: var(--color-surface-muted-strong);
+    border-radius: var(--app-border-radius);
+  }
+
+  &__skeleton {
+    position: absolute;
+    inset: 0;
+  }
+}

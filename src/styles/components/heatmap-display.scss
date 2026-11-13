@@ -1,0 +1,119 @@
+/**
+ * HeatmapDisplay 组件样式
+ * 控制指标热图容器的标题、描述与图片展示布局
+ */
+@use '../variables.scss' as vars;
+@use '../mixins.scss' as util;
+
+.heatmap-display {
+  width: 100%;
+
+  &__title {
+    font-size: var(--font-size-section);
+    font-weight: var(--font-weight-semibold);
+    color: vars.$primary-color;
+    margin: 0 0 12px 0;
+    line-height: var(--line-height-section);
+    font-family: var(--font-family-editorial);
+  }
+
+  &__description {
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
+    color: var(--text-muted-color);
+    margin: 0 0 16px 0;
+  }
+
+  &__wrapper {
+    width: 100%;
+    border-radius: var(--app-border-radius);
+    overflow: hidden;
+    border: none;
+    background: var(--heatmap-background, #ffffff);
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__wrapper--compact {
+    min-height: 120px;
+  }
+
+  &__wrapper--status {
+    --heatmap-background: var(--color-surface);
+  }
+
+  &__wrapper > .result-image-loading {
+    height: 100%;
+  }
+
+  &__image {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    @include util.no-select-image;
+  }
+
+  &__loading,
+  &__error,
+  &__placeholder {
+    width: 100%;
+    padding: 40px 20px;
+  }
+
+  &__upload-pending {
+    width: 100%;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 0;
+    background: var(--warning-surface-color);
+    border: 2px dashed var(--warning-border-color);
+    border-radius: var(--app-border-radius);
+  }
+
+  &__upload-pending-content {
+    text-align: center;
+  }
+
+  &__upload-pending-icon {
+    color: var(--error-text-color);
+    margin-bottom: 12px;
+  }
+
+  &__upload-pending-text {
+    margin: 0;
+    font-size: var(--font-size-body);
+    font-weight: 600;
+    font-family: var(--font-family-ui);
+    color: var(--error-text-color);
+  }
+}
+
+.metric-detail-page .heatmap-card--overview {
+  .heatmap-card__title {
+    margin-bottom: 0;
+  }
+
+  .heatmap-card__body {
+    min-height: 0;
+    display: block;
+    overflow: visible;
+  }
+
+  .heatmap-display__wrapper {
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .heatmap-card__pending {
+    padding: 20px 24px;
+    border-radius: var(--app-border-radius);
+    background: var(--color-surface-muted);
+    color: var(--text-muted-color);
+  }
+}

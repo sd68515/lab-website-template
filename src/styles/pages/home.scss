@@ -1,0 +1,650 @@
+@use '../mixins.scss' as mixins;
+@use '../components/v-select-base.scss' as select;
+@use '../components/interaction' as interaction;
+
+/**
+ * Home 页面样式
+ * 首页的完整样式定义
+ * 包含英雄区域、搜索功能、测量选择和响应式适配
+ */
+
+/* 页面基础布局 */
+
+/* 主内容容器 - 最大宽度和内边距 */
+.home-page {
+  background: var(--color-surface);
+}
+
+.home-page .v-main {
+  background: var(--color-surface);
+}
+
+.main-content {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 40px 32px 64px;
+}
+
+/* 英雄区域 */
+.hero-bleed {
+  width: 100%;
+  background: var(--color-surface);
+  padding: 0 0 40px;
+  border-bottom: 1px solid rgba(var(--v-theme-accent), max(0.12, var(--divider-opacity-min)));
+}
+
+.hero-container {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 28px;
+  align-items: start;
+  min-width: 0;
+}
+
+.hero-grid--no-image {
+  grid-template-columns: 1fr;
+}
+
+.hero-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.hero-title {
+  font-family: var(--font-family-editorial);
+  font-size: var(--font-size-hero);
+  line-height: var(--line-height-hero);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-accent);
+  text-align: center;
+  margin: 0;
+  align-self: center;
+}
+
+.hero-title--sm {
+  font-size: var(--font-size-hero);
+}
+
+.hero-image-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.hero-image {
+  max-width: 720px;
+  width: 100%;
+  border-radius: var(--app-border-radius);
+  overflow: hidden;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: flex-start;
+  padding-top: 0;
+  min-width: 0;
+}
+
+.hero-paragraph {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  color: var(--text-body-color);
+  font-family: var(--font-family-ui);
+  max-width: var(--measure-copy);
+  margin: 0;
+  text-align: left;
+}
+
+.hero-paragraph + .hero-paragraph {
+  margin-top: 0;
+}
+
+.hero-stat {
+  font-weight: 700;
+  color: inherit;
+}
+
+@media (max-width: 768px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 20px;
+  }
+
+  .hero-image-wrapper {
+    justify-content: center;
+  }
+
+  .hero-image {
+    max-width: 100%;
+  }
+
+  .hero-title {
+    text-align: center;
+  }
+
+  .hero-content {
+    padding: 0;
+  }
+}
+
+/* 搜索功能区域 */
+
+/* 搜索部分容器 - 包含多个搜索块 */
+.search-section {
+  margin-top: 32px;
+  padding: 30px 0 28px;
+  display: grid;
+  gap: 32px;
+  border-bottom: 1px solid rgba(var(--v-theme-accent), max(0.12, var(--divider-opacity-min)));
+}
+
+/* 搜索块容器 - 标签和输入框 */
+.search-block {
+  --home-search-height: 52px;
+  display: grid;
+  grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+}
+
+/* 搜索块标签区域 */
+.search-block-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-inline-end: 8px;
+}
+
+/* 搜索栏容器 */
+.search-bar-container {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  gap: 10px 12px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  min-width: 0;
+}
+
+/* 搜索栏分隔线 */
+.search-divider {
+  border-bottom: 2px dashed rgba(var(--v-theme-accent), max(0.45, var(--divider-opacity-min)));
+  margin: 16px 0;
+  grid-column: 1 / -1;
+}
+
+/* 搜索选择框 */
+.search-select {
+  flex: 1 1 280px;
+  min-width: 150px;
+  max-width: 100%;
+  margin: 0;
+
+  /* 使用共享 mixin：高度 52px，输入字体 20px*/
+  @include select.v-select-custom(
+    $height: var(--home-search-height, 52px),
+    $input-font-size: var(--font-size-ui),
+    $label-font-size: var(--font-size-ui)
+  );
+}
+
+/* v-input 容器上下不留外边距。*/
+.search-select .v-input {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.search-select .v-input__details,
+.search-select .v-messages,
+.search-select .v-messages__message {
+  font-family: var(--font-family-ui);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-ui);
+}
+
+.search-select.v-input--error {
+  .v-field__outline__start,
+  .v-field__outline__notch,
+  .v-field__outline__end,
+  .v-field:hover .v-field__outline__start,
+  .v-field:hover .v-field__outline__notch,
+  .v-field:hover .v-field__outline__end {
+    border-color: var(--error-text-color);
+  }
+
+  .v-input__details,
+  .v-messages {
+    color: var(--error-text-color);
+  }
+}
+
+/* 搜索按钮 */
+
+.search-actions {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.search-navigation-error {
+  max-width: 250px;
+  margin: 5px 0 0;
+  color: var(--error-text-color);
+  font-family: var(--font-family-ui);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-ui);
+}
+
+/* 搜索按钮容器 */
+.search-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+/* 搜索按钮基础样式 */
+.search-btn {
+  min-width: 120px;
+  height: 52px;
+  padding: 0 18px;
+  font-size: var(--font-size-ui);
+  font-weight: 600;
+  font-family: var(--font-family-ui);
+  border-radius: var(--app-border-radius);
+  letter-spacing: var(--letter-spacing-ui);
+  border-width: 2px;
+  border-style: solid;
+  line-height: var(--line-height-ui);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+}
+
+/* 按钮 hover 效果 */
+.search-btn:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(var(--v-theme-accent), 0.25);
+}
+
+/* 按钮 active 效果 */
+.search-btn:not(:disabled):active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(var(--v-theme-accent), 0.28);
+}
+
+/* 按钮禁用状态 */
+.search-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+  transform: none;
+  border-color: inherit;
+  color: inherit;
+  background: inherit;
+}
+
+/* 按钮 focus 效果 */
+.search-btn:focus-visible {
+  outline: 3px solid rgba(var(--v-theme-accent), 0.7);
+  outline-offset: 3px;
+}
+
+/* 提交按钮变体 */
+.search-btn--submit {
+  @include interaction.primary-action;
+}
+
+/* 清除按钮变体 */
+.search-btn--clean {
+  background: var(--homepage-clean-button-bg);
+  border-color: var(--homepage-clean-button-border);
+  color: var(--color-accent);
+}
+
+/* 清除按钮 hover */
+.search-btn--clean:not(:disabled):hover {
+  background: var(--homepage-clean-button-hover-bg);
+  border-color: var(--homepage-clean-button-hover-border);
+  color: var(--color-accent);
+}
+
+/* 清除按钮 active */
+.search-btn--clean:not(:disabled):active {
+  background: var(--homepage-clean-button-active-bg);
+  border-color: var(--homepage-clean-button-hover-border);
+  color: var(--color-accent);
+}
+
+/* 清除按钮禁用状态 */
+.search-btn--clean:disabled {
+  background: var(--homepage-clean-button-bg);
+  border-color: var(--homepage-clean-button-border);
+  color: var(--color-accent);
+}
+
+/* 清除按钮 focus */
+.search-btn--clean:focus-visible {
+  outline: 3px solid var(--color-accent);
+}
+
+/* 测量选择区域 */
+
+/* 测量部分容器 */
+.measurement-section {
+  width: 100%;
+  margin: 16px 0 0;
+  padding: 28px 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.measurement-heading {
+  margin: 0;
+  text-align: left;
+}
+
+.measurement-subsection {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.measurement-subheading-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.measurement-subheading {
+  margin: 0;
+  font-size: var(--font-size-section);
+  line-height: var(--line-height-section);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family-editorial);
+  color: var(--color-accent);
+}
+
+.measurement-subtext {
+  margin: 0;
+  font-size: var(--font-size-body);
+  color: var(--text-muted-color);
+}
+
+.measurement-grid {
+  width: 100%;
+  display: grid;
+  gap: 28px;
+}
+
+.measurement-grid--general {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.measurement-grid--simulation {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-6);
+}
+
+.measurement-grid .measurement-card {
+  border: 2px solid var(--color-primary, var(--color-primary));
+  border-radius: var(--app-border-radius);
+  background: var(--color-surface);
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* 覆盖 Vuetify .elevation-0（第三方库覆盖场景允许 !important）*/
+.measurement-grid .measurement-card:hover,
+.measurement-grid .measurement-card:focus-within {
+  border-color: var(--color-accent, var(--color-accent));
+  box-shadow: 0 4px 12px rgba(var(--v-theme-accent), 0.15);
+}
+
+
+.measurement-card-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.measurement-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  align-items: center;
+}
+
+.measurement-image {
+  @include mixins.no-select-image;
+  width: clamp(72px, 50%, 120px);
+  aspect-ratio: 1 / 1;
+  background: transparent;
+  border-radius: var(--app-border-radius);
+  overflow: hidden;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+}
+
+.measurement-image--compact {
+  width: clamp(64px, 45%, 100px);
+  aspect-ratio: 1 / 1;
+}
+
+.measurement-image.v-img--booting {
+  background: linear-gradient(
+    90deg,
+    rgba(var(--v-theme-secondary), 0.1) 25%,
+    rgba(var(--v-theme-secondary), 0.2) 50%,
+    rgba(var(--v-theme-secondary), 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: measurement-image-shimmer 1.5s infinite;
+}
+
+.measurement-image .v-img__img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.measurement-title {
+  font-size: var(--font-size-panel);
+  line-height: var(--line-height-panel);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family-ui);
+  color: var(--color-accent);
+  margin: 0;
+  text-align: center;
+}
+
+.measurement-card--compact .measurement-title {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-ui);
+}
+
+@keyframes measurement-image-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 测量描述 */
+.measurement-desc {
+  font-size: var(--font-size-body);
+  color: var(--text-muted-color);
+  line-height: var(--line-height-body);
+  margin: 0;
+}
+
+/* Hero 在约 1000px 宽度下仍能容纳左右两列，过早切单列会让首页首屏信息密度下降。 */
+@media (max-width: 960px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .hero-image-wrapper {
+    justify-content: center;
+  }
+
+  .hero-image {
+    max-width: min(720px, 100%);
+  }
+}
+
+/* 响应式布局（断点统一：1366px + 768px） */
+@media (max-width: 1366px) {
+  .search-block {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .search-block-header {
+    width: 100%;
+  }
+
+  .search-bar-container {
+    flex-wrap: wrap;
+  }
+
+  .search-select {
+    flex: 1 1 240px;
+    min-width: 0;
+  }
+
+  .search-buttons {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .measurement-grid--general {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .measurement-grid--simulation {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1120px) {
+  .measurement-grid--general {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .measurement-grid--simulation {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* 页面标题 */
+
+/* 大标题样式 */
+.big_title {
+  text-align: left;
+  color: var(--color-accent);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px dashed rgba(var(--v-theme-accent), max(0.25, var(--divider-opacity-min)));
+  font-size: var(--font-size-section);
+  line-height: var(--line-height-section);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-ui);
+}
+
+/* 搜索块标题移除下划线 */
+.search-block-header .big_title {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 32px 20px 48px;
+  }
+
+  .hero-title {
+    font-size: var(--font-size-hero);
+  }
+
+  .hero-paragraph {
+    font-size: var(--font-size-body);
+  }
+
+  .search-bar-container {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .search-select {
+    width: 100%;
+    max-width: none;
+    flex: 0 0 auto;
+  }
+
+  .search-buttons {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .search-actions,
+  .search-navigation-error {
+    width: 100%;
+    max-width: none;
+  }
+
+  .search-buttons .search-btn {
+    width: 100%;
+  }
+
+  .measurement-grid--general {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .measurement-grid--simulation {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

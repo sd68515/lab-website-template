@@ -1,0 +1,275 @@
+@use '../variables.scss' as vars;
+@use './nav-mixins.scss' as mix;
+@use '../mixins.scss' as util;
+
+// 使用 .v-application 前缀提高选择器优先级，覆盖 Vuetify 默认样式（禁止 !important）
+.v-application {
+  // 顶栏容器
+  .top-menu-bar {
+    background-color: vars.$color-nav-background;
+    border-bottom: 1px solid vars.$color-nav-text-active;
+    box-shadow: none;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding-right: 8px;
+    overflow: visible;
+    clip-path: inset(0 var(--scrollbar-width, 0px) 0 0);
+  }
+
+  .top-menu-container.v-container,
+  .top-menu-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline-start: 0;
+    padding-inline-end: calc(vars.$spacing-xl + var(--scrollbar-width, 0px));
+  }
+
+  .top-menu-left {
+    position: relative;
+    display: flex;
+    gap: vars.$spacing-nav-item-gap;
+    align-items: center;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding-inline: vars.$spacing-xl;
+  }
+
+  .top-menu-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: vars.$spacing-lg;
+  }
+
+  .theme-toggle,
+  .language-toggle {
+    flex: 0 0 auto;
+    color: var(--color-accent);
+    border-radius: 50%;
+    touch-action: manipulation;
+
+    &:hover {
+      background: var(--color-surface-muted-strong);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+  }
+
+  .top-menu-nav {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: vars.$spacing-nav-item-gap;
+    height: vars.$header-height;
+    min-height: vars.$header-height;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 0;
+    scroll-padding-inline: vars.$spacing-xl;
+  }
+
+  .top-menu-nav.is-scrollable {
+    padding: 0;
+  }
+
+  .top-menu-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .top-menu-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    color: vars.$color-nav-text-default;
+    cursor: pointer;
+    border-radius: var(--app-border-radius);
+    box-sizing: border-box;
+    transition: opacity 0.15s ease;
+
+    &:hover:not(.is-hidden) {
+      color: vars.$color-nav-text-active;
+    }
+
+    svg {
+      display: block;
+    }
+
+    &.is-visible {
+      display: flex;
+    }
+
+    &.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+      cursor: default;
+    }
+  }
+
+  .top-menu-arrow--left {
+    left: 0;
+    padding-right: 8px;
+    background: linear-gradient(to right, vars.$color-nav-background 70%, transparent);
+  }
+
+  .top-menu-arrow--right {
+    right: 0;
+    padding-left: 8px;
+    background: linear-gradient(to left, vars.$color-nav-background 70%, transparent);
+  }
+
+  // 导航按钮基础样式
+  .top-menu-btn {
+    @include mix.nav-item-base(vars.$header-height, vars.$header-font-size);
+    font-size: vars.$header-font-size;
+    color: vars.$color-nav-text-default;
+    letter-spacing: var(--letter-spacing-ui);
+    border-radius: var(--app-border-radius);
+    font-weight: 400;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-size: 0 0;
+    background-position: center calc(100% - #{vars.$nav-active-line-offset});
+    flex: 0 0 auto;
+
+    .v-btn__overlay,
+    .v-btn__underlay {
+      display: none;
+    }
+
+    .v-btn__content {
+      font-size: inherit;
+    }
+  }
+
+  // 激活状态：使用 background-image 绘制底部短线
+  .top-menu-btn.is-active {
+    @include mix.nav-item-active-style();
+    color: vars.$color-nav-text-active;
+    background-color: transparent;
+    background-image: linear-gradient(vars.$color-nav-text-active, vars.$color-nav-text-active);
+    background-size: vars.$nav-active-line-width vars.$nav-active-line-height;
+    background-position: center calc(100% - #{vars.$nav-active-line-offset});
+    background-repeat: no-repeat;
+  }
+
+  // hover 状态
+  .top-menu-btn:not(.is-active):hover {
+    @include mix.nav-item-hover-style();
+    background-color: transparent;
+  }
+
+  // 禁用 Vuetify 默认的 active/hover 背景
+  .top-menu-btn.v-btn--active,
+  .top-menu-btn:active,
+  .top-menu-btn:hover,
+  .top-menu-btn:focus-visible {
+    background-color: transparent;
+  }
+
+  .top-menu-btn.v-btn--active .v-btn__overlay,
+  .top-menu-btn.v-btn--active .v-btn__underlay {
+    display: none;
+  }
+}
+
+// measurement 页面：虚线边框
+// 说明：body.has-metric-sub-nav 由 MetricSubNav 动态写入
+body.has-metric-sub-nav .v-application .top-menu-bar {
+  border-bottom: 2px dashed vars.$color-nav-text-active;
+}
+
+// brand 标题（在 .v-application 外部，因为它不需要覆盖 Vuetify 样式）
+.top-menu-brand {
+  flex: 0 0 auto;
+  font-family: var(--font-family-editorial);
+  font-size: var(--font-size-section);
+  line-height: var(--line-height-section);
+  font-weight: var(--font-weight-semibold);
+  color: vars.$color-nav-text-active;
+  letter-spacing: normal;
+  white-space: nowrap;
+  @include util.no-select;
+
+  &.top-menu-brand--hidden {
+    width: 0;
+    overflow: hidden;
+    visibility: hidden;
+  }
+}
+
+// 响应式样式
+@media (max-width: 768px) {
+  .v-application {
+    .top-menu-container {
+      padding-inline-end: calc(vars.$spacing-md + vars.$spacing-xs + var(--scrollbar-width, 0px));
+    }
+
+  }
+
+  // 小屏幕：隐藏右侧 brand，避免与按钮/箭头区域冲突
+  .top-menu-brand {
+    display: none;
+  }
+}
+
+.language-menu {
+  // Reduced-motion's overlay duration must not animate connected top/left coordinates.
+  transition-property: opacity, transform;
+}
+
+.language-menu .v-list {
+  min-width: 176px;
+  padding: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--app-border-radius);
+  background: var(--color-surface);
+  color: var(--text-body-color);
+  font-family: var(--font-family-ui);
+}
+
+.language-menu .v-list-item {
+  min-height: 44px;
+  border-radius: var(--app-border-radius);
+}
+
+.language-menu .v-list-item:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+.language-menu__error {
+  padding: 8px;
+  color: var(--error-text-color);
+  font-size: var(--font-size-caption);
+}
+
+.locale-startup-error {
+  padding: 32px;
+  font-family: var(--font-family-ui);
+
+  button {
+    margin-top: 12px;
+    padding: 8px 16px;
+    border: 1px solid currentcolor;
+    border-radius: var(--app-border-radius);
+    cursor: pointer;
+  }
+}

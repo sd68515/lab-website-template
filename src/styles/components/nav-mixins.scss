@@ -1,0 +1,44 @@
+/**
+ * 导航样式复用混入
+ * 提供导航项 hover/active 状态及基础排版的可复用 mixin
+ */
+@use '../variables.scss' as vars;
+
+// 通用：导航项 hover 视觉（仅改变文本颜色）
+@mixin nav-item-hover-style($radius: 0) {
+  background-color: transparent;
+  color: vars.$color-nav-text-active;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+// 通用：导航项 active 视觉（绿色文本 + 居中底部指示线）
+@mixin nav-item-active-style($radius: 0) {
+  background-color: transparent;
+  color: vars.$color-nav-text-active;
+  font-weight: 400;
+  box-shadow: none;
+  border-bottom: none;
+  border-radius: 0;
+}
+
+// 可选：导航项基础排版（字体/高度/间距）。如需统一可在容器中调用。
+@mixin nav-item-base($height, $font-size) {
+  position: relative;
+  color: vars.$color-nav-text-default;
+  font-size: $font-size;
+  font-weight: 400;
+  font-family: var(--font-family-ui);
+  height: $height;
+  line-height: $height;
+  padding: 0 vars.$spacing-nav-item-x;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  border-bottom: none;
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+  overflow: visible;
+}

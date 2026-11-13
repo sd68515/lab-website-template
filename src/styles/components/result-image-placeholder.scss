@@ -1,0 +1,60 @@
+/**
+ * ResultImagePlaceholder 组件样式
+ * 用于结果图片缺失时的占位徽章展示
+ */
+@use '../variables.scss' as vars;
+
+.result-image-placeholder {
+  width: 100%;
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-surface-muted-strong);
+  border: 2px solid var(--color-border);
+  border-radius: var(--app-border-radius);
+  padding: 12px 16px;
+  text-align: center;
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 0;
+    font-size: var(--font-size-ui);
+    line-height: var(--line-height-ui);
+    font-weight: 600;
+    white-space: normal;
+    background-color: transparent;
+    border: none;
+    color: var(--text-body-color);
+  }
+
+  &__reason {
+    margin-top: 6px;
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
+    color: rgba(var(--v-theme-text), 0.72);
+    max-width: 720px;
+  }
+
+  &--upload,
+  &--compute,
+  &--error {
+    background: linear-gradient(var(--warning-surface-color), var(--warning-surface-color)), var(--color-surface);
+    border-color: var(--warning-border-color);
+  }
+
+  &--upload,
+  &--error {
+    .result-image-placeholder__badge {
+      color: var(--error-text-color);
+    }
+
+    .result-image-placeholder__reason {
+      color: var(--error-text-color);
+    }
+  }
+}
