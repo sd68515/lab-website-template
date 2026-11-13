@@ -55,6 +55,10 @@ Despite their directory name, the files in `src/constants/generated/` have no da
 
 ## 图片 / Images
 
+页脚保留了西安电子科技大学和 UTHealth Houston 的机构标识，位于 `public/images/ui/branding/`。复用时请根据合作关系和机构标识使用规定替换或移除；这些标识不属于网站代码的 MIT 授权范围。
+
+The footer retains the Xidian University and UTHealth Houston institutional logos in `public/images/ui/branding/`. Replace or remove them according to your collaboration and the institutions' branding rules; the code's MIT license does not cover these marks.
+
 首页示意图目前是 `src/views/HomeView.vue` 中的占位元素；在该组件中替换为自己的图片并提供合适的替代文本。结果页的图片映射位于 `src/constants/result-image-assets.ts` 的 `RESULT_IMAGE_ASSETS`，默认是空对象，因此未配置的图片直接显示占位，不会仅因文件存在而显示。
 
 结果页先根据数据集 ID、内部方法 ID 和图形类型生成带部署基础路径的键，再查找映射；映射值是实际显示的 URL。对于放在 `public/` 的文件，键和值都应使用现有路径工具处理基础路径。例如，下面为真实类型的 Dataset A（内部 ID `1`）和 Method A（内部 ID `MethodA`）配置一张图；将它加入 `result-image-assets.ts`，并放置对应文件：

@@ -2,3 +2,5 @@ The website source code is licensed under the MIT License in LICENSE. The origin
 
 The self-hosted Inter, Source Serif and Source Han fonts have their own Open Font License notices in src/assets/fonts/.
 All datasets and numerical values in this template are fictional examples. No original research data, figures, or publications are included.
+
+The institutional logos under public/images/ui/branding/ are retained for attribution and are not covered by the MIT code license. Their use is subject to the respective institutions' policies.
