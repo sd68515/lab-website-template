@@ -1,5 +1,7 @@
 # 科研网站模板 / Research Website Template
 
+[在线演示 / Live demo](https://sd68515.github.io/lab-website-template/) · [界面设计约定 / Design guidelines](DESIGN.md)
+
 这是一个基于 Vue 3、Vuetify 和 Vite 的静态前端模板。它保留了原站的导航、首页级联选择器、工具目录筛选与表格、数据集和方法结果浏览、指标页面、帮助及联系页面。界面支持英语、简体中文和明暗主题。
 
 所有示例名称与数值均为虚构内容，仅用于展示界面。模板不包含后端；结果图片和下载资源尚未配置，页面会显示相应占位状态。
