@@ -1,0 +1,1 @@
+import{Xt as e,dt as t,et as n}from"./locale-CTnoJ7k9.js";import{t as r}from"./GeneralMetricPage-DFgG1ers.js";var i=t({__name:`AngleConsistency`,setup(t){return(t,i)=>(e(),n(r,{"metric-id":`angle-consistency`}))}});export{i as default};
