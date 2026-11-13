@@ -1,0 +1,1 @@
+import{Xt as e,dt as t,et as n}from"./locale-CzVH30JF.js";import{t as r}from"./GeneralMetricPage-I8JIHTjD.js";var i=t({__name:`ICCoh`,setup(t){return(t,i)=>(e(),n(r,{"metric-id":`iccoh`}))}});export{i as default};
