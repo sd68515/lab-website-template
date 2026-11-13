@@ -1,0 +1,71 @@
+/** Shared by the early page bootstrap, Vuetify, CSS and Canvas. */
+export const lightAppearance = {
+  accent: '#1C4E80',
+  accentDark: '#143A5F',
+  accentHover: '#2E6BA8',
+  link: '#175C96',
+  linkHover: '#103F69',
+  interactionHover: '#DFEAF5',
+  brand: '#8B9AB6',
+  brandLight: '#C7CEE2',
+  brandDark: '#6D7C99',
+  surface: '#FFFFFF',
+  background: '#FFFFFF',
+  onAccent: '#FFFFFF',
+  surfaceMuted: '#F7F8FB',
+  surfaceMutedStrong: '#E8EDF2',
+  border: '#D2DCE6',
+  borderSubtle: '#E0E0E0',
+  divider: '#E8EDF2',
+  text: '#172433',
+  textSoft: '#333F4D',
+  textMuted: '#536171',
+  placeholder: '#59677B',
+  warning: '#A85310',
+  error: '#B12B22',
+  success: '#1F7A3E',
+  shadow: '#172433',
+  scrim: '#172433',
+  chartDimmed: '#C0C0C0',
+  grid: '#E4EAF0',
+  logSurface: '#0F172A',
+  logText: '#E2E8F0'
+} as const
+
+export type AppearanceColors = { [Key in keyof typeof lightAppearance]: string }
+export type AppearanceName = 'light' | 'dark'
+
+export const darkAppearance = {
+  accent: '#E2DED6',
+  accentDark: '#C7C3BB',
+  accentHover: '#F3F0EB',
+  link: '#8FC9FF',
+  linkHover: '#C1E2FF',
+  interactionHover: '#33475E',
+  brand: '#C9C5BE',
+  brandLight: '#A7A39C',
+  brandDark: '#E0DCD5',
+  background: '#141C27',
+  surface: '#1C2735',
+  onAccent: '#20252B',
+  surfaceMuted: '#222F40',
+  surfaceMutedStrong: '#2D3D51',
+  border: '#90969E',
+  borderSubtle: '#7E8792',
+  divider: '#7E8792',
+  text: '#E7E5E1',
+  textSoft: '#D4D1CC',
+  textMuted: '#BFBBB4',
+  placeholder: '#B9B5AE',
+  warning: '#F1BA76',
+  error: '#FFB4AB',
+  success: '#8BD8AC',
+  shadow: '#080E17',
+  scrim: '#080E17',
+  chartDimmed: '#898983',
+  grid: '#6C737C',
+  logSurface: '#101925',
+  logText: '#E7E5E1'
+} as const satisfies AppearanceColors
+
+export const appearances = { light: lightAppearance, dark: darkAppearance }

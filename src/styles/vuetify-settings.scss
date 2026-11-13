@@ -1,0 +1,63 @@
+/**
+ * Vuetify 全局设置
+ * 用于对 Vuetify 默认样式做轻量级覆盖（字体、圆角等）
+ */
+
+@use './variables.scss' as vars;
+
+/* 应用级字体设置：与全局字体保持一致 */
+.v-application {
+  font-family: var(--font-family-ui);
+  font-optical-sizing: auto;
+  color: var(--text-body-color);
+}
+
+/* Editorial titles are selected by role, not by heading tag. */
+.hero-title,
+.big_title,
+.page-title,
+.tools-title,
+.help-title,
+.help-section-title,
+.about-section-title,
+.about-team-heading,
+.metric-category-title {
+  font-family: var(--font-family-editorial);
+  font-optical-sizing: auto;
+  letter-spacing: var(--letter-spacing-heading);
+}
+
+/* The named Vuetify radius shares the same token as native controls. */
+.rounded-app,
+.v-btn {
+  border-radius: var(--app-border-radius);
+}
+
+.v-btn {
+  letter-spacing: var(--letter-spacing-ui);
+}
+
+/* Filled link buttons must retain their paired foreground after the anchor reset. */
+.v-btn.bg-primary {
+  color: var(--color-on-accent);
+}
+
+.v-card {
+  border-radius: vars.$border-radius;
+}
+
+/* These surfaces are teleported outside their originating components. */
+.v-menu > .v-overlay__content,
+.v-tooltip > .v-overlay__content,
+.v-snackbar__wrapper {
+  border-radius: vars.$border-radius;
+}
+
+/* Keep explicit shape choices above the framework's layered utilities. */
+.rounded-0 {
+  border-radius: 0;
+}
+
+.rounded-circle {
+  border-radius: 50%;
+}
