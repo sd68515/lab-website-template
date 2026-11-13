@@ -191,6 +191,8 @@ export function getMetricById(id: string): MetricMetadata | undefined {
 
 /** Resolve presentation text without changing the legacy result/asset key. */
 export function getMetricDisplayName(name: string): string {
+  if (name === 'Time consistency') return 'Metric L';
+  if (name === 'Velocity consistency') return 'Metric M';
   return METRICS_METADATA.find(metric => metric.name === name)?.displayName ?? name;
 }
 

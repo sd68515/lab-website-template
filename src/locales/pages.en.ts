@@ -179,6 +179,7 @@ export const pageMessages = {
   "downSampling.noValidDataForTheSelectedDown2": "No valid data for the selected down-sampling target.",
   "downSampling.metricPsNote": "Note: {value1}",
   "downSampling.selectDimension": "Select an example dimension to view the chart.",
+  "downSampling.exampleScore": "Example score",
   "groundTrueCorrelation.srOnly": "Overall heatmaps for {value1}",
   "memoryEfficiency.pleaseWaitWhileWeFetchTheData": "Please wait while we fetch the data file.",
   "memoryEfficiency.dataFileTemporarilyUnavailable": "Data file temporarily unavailable",

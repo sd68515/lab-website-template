@@ -124,7 +124,7 @@
           :series="series"
           @error="handleChartError"
           :decimals="3"
-          :y-axis-name="'Example score'"
+          :y-axis-name="text('downSampling.exampleScore')"
           :y-axis-scale="true"
         />
 
